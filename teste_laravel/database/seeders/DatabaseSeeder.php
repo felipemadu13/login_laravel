@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Felipe',
             'lastName' => 'Teste',
             'email' => 'test@example.com',
-            'cpf' => '000.111.222-33',
-            'phone' => '(84) 3222-2222',
-            'status' => 'active',
-            'role' => 'admin',
+            'cpf' => '00011122233',
+            'phone' => '8432222222',
+            'status' => false,
+            'type' => 'admin',
             'password' => '123456'
 
         ]);

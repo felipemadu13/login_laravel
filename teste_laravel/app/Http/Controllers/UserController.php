@@ -12,16 +12,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $allUser = User::all();
-        return dd($allUser);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $users = User::all();
+        return response()->json($users, 200);
+        // dd($users -> toArray());
     }
 
     /**
@@ -36,14 +29,6 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
     {
         //
     }

@@ -1,10 +1,25 @@
 
 ### CREATE
+POST http://localhost:8000/api/user
+content-type: application/json
 
-### READ
-GET http://localhost:8000/teste
+{
+    "firstName": "Francisco",
+    "lastName": "Changas",
+    "email": "fchagas@teste.com",
+    "cpf": "99988877766",
+    "phone": "8499544487890",
+    "password": "franca"
+}
+
+### READ (FIND ALL)
+GET http://localhost:8000/api/user
+
+### READ (FIND ONE)
+GET http://localhost:8000/api/user/1
 
 ### UPDATE
+PUT http://localhost:8000/api/user
 
 ### DELETE
 

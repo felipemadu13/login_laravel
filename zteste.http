@@ -23,12 +23,10 @@ PUT http://localhost:8000/api/user/1
 content-type: application/json
 
 {
-    "firstName": "nome",
+    "firstName": "hhhh",
     "lastName": "sobrenome",
     "email": "nome@teste.com",
     "cpf": "00000000000",
-    "phone": "84999999999",
-    "status": true,
     "type": "admin",
     "password": "bananabarco"
 }

@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\Models\User;
+use App\Repositories\UserRepository;
 
 class UserController extends Controller
 {
+    private $userRepository;
+    
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
     public function index()
     {
-        $users = User::all();
+        $users = $this->userRepository->getAll();
+        dd($users);
         return response()->json($users, 200);
-        // dd($users -> toArray());
     }
 
     public function store(Request $request)
@@ -39,16 +47,24 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::find($id);
-        $user->firstName = request()->firstName;
-        $user->lastName = request()->lastName;
-        $user->email = request()->email;
-        $user->cpf = request()->cpf;
-        $user->phone = request()->phone;
-        $user->status = request()->status;
-        $user->type = request()->type;
-        $user->password = request()->password;
+        // $user->firstName = request()->firstName;
+        // $user->lastName = request()->lastName;
+        // $user->email = request()->email;
+        // $user->cpf = request()->cpf;
+        // $user->phone = request()->phone;
+        // $user->status = request()->status;
+        // $user->type = request()->type;
+        // $user->password = request()->password;
+        // $user->save();
 
-        $user->save();
+        // verificar se $user existe
+
+        if ($request->method() == "put") {
+            dd($request->all());
+            $user->update([$request->all()]);
+        }
+
+
         return response()->json($user);
     }
 

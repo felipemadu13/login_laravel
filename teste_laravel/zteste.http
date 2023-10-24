@@ -19,10 +19,22 @@ GET http://localhost:8000/api/user
 GET http://localhost:8000/api/user/1
 
 ### UPDATE
-PUT http://localhost:8000/api/user
+PUT http://localhost:8000/api/user/1
+content-type: application/json
+
+{
+    "firstName": "nome",
+    "lastName": "sobrenome",
+    "email": "nome@teste.com",
+    "cpf": "00000000000",
+    "phone": "84999999999",
+    "status": true,
+    "type": "admin",
+    "password": "bananabarco"
+}
 
 ### DELETE
-
+DELETE http://localhost:8000/api/user/8
 
 
 

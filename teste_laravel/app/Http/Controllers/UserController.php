@@ -16,42 +16,46 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = User::create([
+        User::create([
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
             'email' => request()->email,
             'cpf' => request()->cpf,
             'phone' => request()->phone,
-            'status' => false,
-            'type' => 'admin',
-            'password' => '123456dois'
+            'status' => request()->status,
+            'type' => request()->type,
+            'password' => request()->password
         ]);
 
         return response()->json('Usuário cadastrado com sucesso.', 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $userId = User::find($id);
-        return response()->json($userId);
+        $user = User::find($id);
+        return response()->json($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::find($id);
+        $user->firstName = request()->firstName;
+        $user->lastName = request()->lastName;
+        $user->email = request()->email;
+        $user->cpf = request()->cpf;
+        $user->phone = request()->phone;
+        $user->status = request()->status;
+        $user->type = request()->type;
+        $user->password = request()->password;
+
+        $user->save();
+        return response()->json($user);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $user = User::find($id);
+        $user->delete();
+        return response()->json('Usuário deletado com sucesso');
     }
 }

@@ -3,35 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \App\Models\User;
+use App\Models\User;
 use App\Repositories\UserRepository;
+
+
 
 class UserController extends Controller
 {
     private $userRepository;
-    
+
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = $this->userRepository->getAll();
-        dd($users);
-        return response()->json($users, 200);
+        try {
+            $users =  $this->userRepository->getAll();
+            return  response()->json($users, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function store(Request $request)
     {
-        User::create([
+
+       $user = User::create([
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
             'email' => request()->email,
             'cpf' => request()->cpf,
             'phone' => request()->phone,
-            'status' => request()->status,
-            'type' => request()->type,
             'password' => request()->password
         ]);
 

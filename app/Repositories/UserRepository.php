@@ -4,14 +4,14 @@ namespace App\Repositories;
 
 use App\Models\User;
 
-abstract class UserRepository extends Repository
+class UserRepository extends Repository
 {
-    private $user;
 
-    public function __construct(User $user)
+    public function __construct()
     {
-        $this->user = $user;
         $this->setModel(User::class);
     }
 
+
 }
+

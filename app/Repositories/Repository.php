@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 abstract class Repository
 {
-    private $model;
+
     public function setModel($modelClass)
     {
         $this->model = app($modelClass);
@@ -21,8 +21,15 @@ abstract class Repository
         return $model;
     }
 
-    // $users = User::all();
-    // return response()->json($users, 200);
-    // // dd($users -> toArray());
+    public function getSingle($id)
+    {
+        $model = $this->model->find($id);
+
+        if ($model === null) {
+            throw new \Exception('Recurso pesquisado não existe');
+        }
+
+        return $model;
+    }
 }
 

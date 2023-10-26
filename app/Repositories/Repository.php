@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 abstract class Repository
 {
+    private $model;
 
     public function setModel($modelClass)
     {
@@ -24,12 +25,19 @@ abstract class Repository
     public function getSingle($id)
     {
         $model = $this->model->find($id);
-
         if ($model === null) {
             throw new \Exception('Recurso pesquisado não existe');
         }
-
         return $model;
     }
+
+    public function delete($id)
+    {
+        $model = $this->model->find($id);
+        $model->delete();
+    }
+
+
+
 }
 

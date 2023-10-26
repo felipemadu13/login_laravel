@@ -30,8 +30,21 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $user = $this->userRepository->register($request);
-        return response()->json($user, 200);
+        try {
+
+
+
+            $user = $this->userRepository->register($request);
+            return response()->json(["sucess"=>$user, 200]);
+
+
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+
+
+
     }
 
     public function show(string $id)
@@ -42,8 +55,16 @@ class UserController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $user = $this->userRepository->update($id);
+        $user = $this->userRepository->updatePut($request, $id);
         return response()->json($user);
+
+        // if ($request->method() == "put") {
+        //     return 'Método PUT';
+        // }
+
+        // if ($request->method() == "patch") {
+        //     return "Método PATCH";
+        // }
     }
 
     public function destroy(string $id)

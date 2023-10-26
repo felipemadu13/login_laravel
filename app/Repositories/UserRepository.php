@@ -14,25 +14,28 @@ class UserRepository extends Repository
 
     public function register($data)
     {
-
+        $users = $this->getAll();
         $user = User::create([
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
             'email' => request()->email,
             'cpf' => request()->cpf,
             'phone' => request()->phone,
-            'password' => request()->password
+            'password' => bcrypt(request()->password),
+            'type' => count($users) == 0 ? 'admin' : 'user'
         ]);
+        if (!$user) {
+            throw new \Exception("Erro ao cadastrar");
+        }
         return $user;
     }
 
-    // 1 logica
-    // se a tabela user estiver vazia, o primeiro usuario será um usuario admin.
 
-    public function update($id)
+    public function updatePut($request, $id)
     {
         // verificar se $user existe
 
+        // update longo
         $user = User::where('id', $id)->update([
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
@@ -44,11 +47,20 @@ class UserRepository extends Repository
             'password' => request()->password
         ]);
         return $user;
-        // if ($request->method() == "put") {
-        //     $user->update([$request->all()]);
-        // }
+
+
+        // update curto
+        $user = User::where('id',$id)->update([$request->all()]);
+        return $user;
 
     }
+
+    public function updatePath()
+    {
+        // trocar senha
+    }
+
+
 
 
 }

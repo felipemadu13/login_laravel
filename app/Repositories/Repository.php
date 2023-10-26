@@ -15,10 +15,9 @@ abstract class Repository
     public function getAll()
     {
         $model = $this->model->All();
-
-        if ($model->isEmpty()) {
-            throw new \Exception('Recurso pesquisado não existe');
-        }
+        // if ($model->isEmpty()) {
+        //     throw new \Exception('Recurso pesquisado não existe');
+        // }
         return $model;
     }
 

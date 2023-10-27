@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
         //     'status' => false,
         //     'type' => 'admin',
         //     'password' => '123456'
-
         // ]);
 
     }

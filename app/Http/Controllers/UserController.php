@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Repositories\UserRepository;
@@ -28,22 +29,14 @@ class UserController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         try {
-
-
-
             $user = $this->userRepository->register($request);
             return response()->json(["sucess"=>$user, 200]);
-
-
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
-
-
 
     }
 

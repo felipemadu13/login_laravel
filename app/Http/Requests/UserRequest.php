@@ -26,7 +26,7 @@ class UserRequest extends FormRequest
             'firstName'=> 'required',
             'lastName'=> 'required',
             'email'=> ['required', 'email', Rule::unique('users')->ignore($this->id)],
-            'cpf'=> 'required',
+            'cpf'=> ['required', 'digits:11', Rule::unique('users')->ignore($this->id)],
             'phone'=> 'required',
             'password'=> 'required'
         ];
@@ -35,8 +35,10 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'required'=> 'O campo : attribute é o obrigatório',
-            'email.unique'=> 'Este email já consta no sistema'
+            'required'=> 'O campo :attribute é o obrigatório.',
+            'email.unique'=> 'Email já cadastrado no sistema.',
+            'cpf.unique'=> 'CPF já cadastrado no sistema',
+            'cpf.digits'=> 'CPF digitado incorretamente'
         ];
     }
 }

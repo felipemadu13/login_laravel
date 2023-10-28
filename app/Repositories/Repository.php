@@ -4,38 +4,59 @@ namespace App\Repositories;
 
 abstract class Repository
 {
-    private $model;
+    protected static $model;
 
-    public function setModel($modelClass)
+    public function Model()
     {
-        $this->model = app($modelClass);
-        return $this;
+        return app(static::$model);
     }
 
-    public function getAll()
+    public function findAll()
     {
-        $model = $this->model->All();
-        // if ($model->isEmpty()) {
-        //     throw new \Exception('Recurso pesquisado não existe');
-        // }
-        return $model;
+        $model = self::Model()::all();
+        if ($model->isEmpty()) {
+            throw new \Exception('Nenhum dado encontrado', 404);
+        }
+        return  $model;
     }
 
-    public function getSingle($id)
+    public function findById(int $id)
     {
-        $model = $this->model->find($id);
-        if ($model === null) {
-            throw new \Exception('Recurso pesquisado não existe');
+        $model = self::Model()::find($id);
+        if ($model == null) {
+            throw new \Exception('Item solicitado não existe', 404);
         }
         return $model;
     }
 
-    public function delete($id)
+    public function create(array $attributes = [])
     {
-        $model = $this->model->find($id);
-        $model->delete();
+        return self::Model()::create($attributes);
     }
 
+    public function update(int $id, array $attributes = [])
+    {
+        $model  = $this->findById($id);
+        $update = $model->update($attributes);
+
+        if($update){
+            return $model;
+        }
+
+        throw new \Exception('Erro inesperado', 500);
+    }
+
+    public  function delete(int $id)
+    {
+        $model   = $this->findById($id);
+        $delete  = $model->delete();
+
+        if($delete){
+            return $delete;
+        }
+
+        throw new \Exception('Erro inesperado', 500);
+    }
 
 
 }

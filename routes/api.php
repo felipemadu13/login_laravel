@@ -27,4 +27,3 @@ Route::prefix('user')->group(function () {
     Route::patch('/{id}', [UserController::class, "update"]);
     Route::delete('/{id}', [UserController::class, "destroy"]);
 });
-

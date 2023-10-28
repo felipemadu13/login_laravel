@@ -7,11 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Repositories\UserRepository;
 
-
-
 class UserController extends Controller
 {
-
     private $userRepository;
 
     public function __construct(UserRepository $userRepository)
@@ -22,47 +19,59 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
-            $users = $this->userRepository->getAll();
-            return response()->json($users, 200);
+            $users =  $this->userRepository->findAll();
+            return  response()->json($users, 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
 
     public function store(UserRequest $request)
     {
         try {
-            $user = $this->userRepository->register($request);
-            return response()->json(["sucess"=>$user, 200]);
-        } catch (\Throwable $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            $user =  $this->userRepository->register($request);
+            return response()->json(['sucess' => $user], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-
     }
 
     public function show(string $id)
     {
-        $user = $this->userRepository->getSingle($id);
-        return response()->json($user);
+        try {
+            $users =  $this->userRepository->findById($id);
+            return  response()->json($users, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
     public function update(Request $request, string $id)
     {
-        $user = $this->userRepository->updatePut($request, $id);
-        return response()->json($user);
+        // colocar operador ternário
+        try {
+            if ($request->method() == "put") {
+                $user = $this->userRepository->updatePut($request, $id);
+                return response()->json($user);
+            }
+            if ($request->method() == "patch") {
+                return "Método PATCH";
+            }
 
-        // if ($request->method() == "put") {
-        //     return 'Método PUT';
-        // }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
 
-        // if ($request->method() == "patch") {
-        //     return "Método PATCH";
-        // }
     }
 
     public function destroy(string $id)
     {
-        $user = $this->userRepository->delete($id);
-        return response()->json('Usuário deletado com sucesso');
+        try {
+            $user =  $this->userRepository->delete($id);
+            return response()->json(['sucess' => 'Usuário deletado com sucesso.'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
+
 }

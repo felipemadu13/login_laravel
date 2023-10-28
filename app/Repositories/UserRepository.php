@@ -7,29 +7,24 @@ use App\Models\User;
 class UserRepository extends Repository
 {
 
-    public function __construct(User $user)
-    {
-        $this->setModel(User::class);
-    }
+    protected static $model = User::class;
 
-    public function register($data)
-    {
-        $users = $this->getAll();
-        $user = User::create([
-            'firstName' => request()->firstName,
-            'lastName' => request()->lastName,
-            'email' => request()->email,
-            'cpf' => request()->cpf,
-            'phone' => request()->phone,
-            'password' => bcrypt(request()->password),
-            'type' => count($users) == 0 ? 'admin' : 'user'
-        ]);
-        if (!$user) {
-            throw new \Exception("Erro ao cadastrar");
-        }
-        return $user;
-    }
+    public function register($attributes) {
 
+       $users = self::Model()->all();
+
+       $user = $this->create([
+        'firstName' => $attributes->firstName,
+        'lastName'  => $attributes->lastName,
+        'email'     => $attributes->email,
+        'cpf'       => $attributes->cpf,
+        'phone'     => $attributes->phone,
+        'type'      => $users->isEmpty() ? 'admin' : 'user',
+        'password'  => bcrypt($attributes->password)
+     ]);
+
+       return $user;
+    }
 
     public function updatePut($request, $id)
     {

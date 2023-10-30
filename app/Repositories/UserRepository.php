@@ -26,12 +26,13 @@ class UserRepository extends Repository
        return $user;
     }
 
-    public function updatePut($request, $id)
+    public function updatePut($id)
     {
-        // verificar se $user existe
+
+        $model = self::Model()::find($id);
 
         // update longo
-        $user = User::where('id', $id)->update([
+        $user = $model->update([
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
             'email' => request()->email,
@@ -39,20 +40,24 @@ class UserRepository extends Repository
             'phone' => request()->phone,
             'status' => request()->status,
             'type' => request()->type,
-            'password' => request()->password
+            'password' => bcrypt(request()->password)
         ]);
         return $user;
 
 
         // update curto
-        $user = User::where('id',$id)->update([$request->all()]);
-        return $user;
+        // $user = User::where('id',$id)->update([$request->all()]);
+        // return $user;
 
     }
 
-    public function updatePath()
+    public function updatePatch($id)
     {
-        // trocar senha
+        $model = self::Model()::find($id);
+        $user = $model->update([
+            'password' => bcrypt(request()->password)
+        ]);
+        return $user;
     }
 
 

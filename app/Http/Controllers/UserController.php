@@ -48,14 +48,17 @@ class UserController extends Controller
 
     public function update(Request $request, string $id)
     {
-        // colocar operador ternário
         try {
-            if ($request->method() == "put") {
-                $user = $this->userRepository->updatePut($request, $id);
+
+              // verificar se $user existe
+
+            if ($request->method() == "PUT") {
+                $user = $this->userRepository->updatePut($id);
                 return response()->json($user);
             }
-            if ($request->method() == "patch") {
-                return "Método PATCH";
+            if ($request->method() == "PATCH") {
+                $user = $this->userRepository->updatePatch($id);
+                return response()->json($user);
             }
 
         } catch (\Exception $e) {

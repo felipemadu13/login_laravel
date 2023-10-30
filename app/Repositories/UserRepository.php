@@ -12,7 +12,6 @@ class UserRepository extends Repository
     public function register($attributes) {
 
        $users = self::Model()->all();
-
        $user = $this->create([
         'firstName' => $attributes->firstName,
         'lastName'  => $attributes->lastName,
@@ -28,11 +27,7 @@ class UserRepository extends Repository
 
     public function updatePut($id)
     {
-
-        $model = self::Model()::find($id);
-
-        // update longo
-        $user = $model->update([
+        $user = $this->update($id, [
             'firstName' => request()->firstName,
             'lastName' => request()->lastName,
             'email' => request()->email,
@@ -44,17 +39,11 @@ class UserRepository extends Repository
         ]);
         return $user;
 
-
-        // update curto
-        // $user = User::where('id',$id)->update([$request->all()]);
-        // return $user;
-
     }
 
     public function updatePatch($id)
     {
-        $model = self::Model()::find($id);
-        $user = $model->update([
+        $user = $this->update($id, [
             'password' => bcrypt(request()->password)
         ]);
         return $user;

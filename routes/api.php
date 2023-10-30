@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\ApiProtectedRoute;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +30,10 @@ Route::prefix('user')->group(function () {
     Route::delete('/{id}', [UserController::class, "destroy"]);
 });
 
+Route::middleware(ApiProtectedRoute::class)->group(function () {
+    Route::post('me', [AuthController::class, "me"]);
+});
+
     Route::post('login', [AuthController::class, "login"]);
     Route::post('logout', [AuthController::class, "logout"]);
     Route::post('refresh', [AuthController::class, "refresh"]);
-    Route::post('me', [AuthController::class, "me"]);

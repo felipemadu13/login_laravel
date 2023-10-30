@@ -34,11 +34,9 @@ class UserRepository extends Repository
             'cpf' => request()->cpf,
             'phone' => request()->phone,
             'status' => request()->status,
-            'type' => request()->type,
-            'password' => bcrypt(request()->password)
+            'type' => request()->type
         ]);
         return $user;
-
     }
 
     public function updatePatch($id)

@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
-            $users =  $this->userRepository->findAll();
+            $users = $this->userRepository->findAll();
             return  response()->json($users, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -49,8 +49,6 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-
-              // verificar se $user existe
 
             if ($request->method() == "PUT") {
                 $user = $this->userRepository->updatePut($id);

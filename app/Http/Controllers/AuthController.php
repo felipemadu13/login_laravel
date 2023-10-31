@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-// se você não tiver usando a classe Auth apague
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -16,8 +14,7 @@ class AuthController extends Controller
             if (!$token = auth('api')->attempt($credentials)) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
-            // não use o respondWithToken
-            return $this->respondWithToken($token);
+            return $token;
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
@@ -41,19 +38,8 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        // não use o respondWithToken
-        return $this->respondWithToken(auth('api')->refresh('api'));
+        $newToken = auth('api')->refresh('api');
+        return $newToken;
     }
-    // não precisamos dessa função  respondWithToken aqui apague
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            // isso não deve exister em um controller questão de segurança
-            // isso tem que ficar no .env
-            // pesquise e traga a solução
-            'expires_in' => auth('api')->factory()->getTTL() * 60
-        ]);
-    }
+
 }

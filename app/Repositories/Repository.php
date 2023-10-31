@@ -57,7 +57,5 @@ abstract class Repository
 
         throw new \Exception('Erro inesperado', 500);
     }
-
-
 }
 

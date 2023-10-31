@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
+// vc não está usando o metodo model User? se não tiver apague
 use App\Models\User;
 use App\Repositories\UserRepository;
 
@@ -30,6 +31,9 @@ class UserController extends Controller
     {
         try {
             $user =  $this->userRepository->register($request);
+            // preciso verificar o que tem dentro do $user
+            // se $user  um usuario cadastrado retorne return response()->json(['sucess' => $user], 201);
+            // se não retorne o erro
             return response()->json(['sucess' => $user], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -49,13 +53,18 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-
+            // está muito repetitivo refatore seu código para reduzir os ifs
+            // cade a validação ??
             if ($request->method() == "PUT") {
+                // passe o request como uma variavel para a função updatePut
                 $user = $this->userRepository->updatePut($id);
+                // preciso que vc retorne código HTTP com sucesso
                 return response()->json($user);
             }
             if ($request->method() == "PATCH") {
+                // passe o request como uma variavel para a função updatePatch
                 $user = $this->userRepository->updatePatch($id);
+                // preciso que vc retorne código HTTP com sucesso
                 return response()->json($user);
             }
 

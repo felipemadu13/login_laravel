@@ -18,8 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('cpf', 11)->unique();
             $table->string('phone', 20);
-            // o true deve ser um boleano e não uma string
-            $table->boolean('status')->default('true');
+            $table->boolean('status')->default(true);
             $table->enum('type', ['user', 'admin'])->default('user');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

@@ -36,7 +36,6 @@ class UserRepository extends Repository
             'email' => request()->email,
             'cpf' => request()->cpf,
             'phone' => request()->phone,
-            'status' => request()->status,
             'type' => request()->type
         ]);
         return $user;

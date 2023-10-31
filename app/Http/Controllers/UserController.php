@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
-// vc não está usando o metodo model User? se não tiver apague
-use App\Models\User;
 use App\Repositories\UserRepository;
 
 class UserController extends Controller
@@ -31,10 +29,11 @@ class UserController extends Controller
     {
         try {
             $user =  $this->userRepository->register($request);
-            // preciso verificar o que tem dentro do $user
-            // se $user  um usuario cadastrado retorne return response()->json(['sucess' => $user], 201);
-            // se não retorne o erro
-            return response()->json(['sucess' => $user], 201);
+            if(!$user) {
+                return response()->json(['error' => 'Erro ao cadastrar'], 404);
+            }
+            return response()->json(['success' => $user], 201);
+
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
@@ -44,30 +43,20 @@ class UserController extends Controller
     {
         try {
             $users =  $this->userRepository->findById($id);
-            return  response()->json($users, 200);
+            return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
 
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
         try {
-            // está muito repetitivo refatore seu código para reduzir os ifs
-            // cade a validação ??
-            if ($request->method() == "PUT") {
-                // passe o request como uma variavel para a função updatePut
-                $user = $this->userRepository->updatePut($id);
-                // preciso que vc retorne código HTTP com sucesso
-                return response()->json($user);
-            }
-            if ($request->method() == "PATCH") {
-                // passe o request como uma variavel para a função updatePatch
-                $user = $this->userRepository->updatePatch($id);
-                // preciso que vc retorne código HTTP com sucesso
-                return response()->json($user);
-            }
+            $user = $request->method() == "PUT"
+            ? $this->userRepository->updatePut($id, $request)
+            : $this->userRepository->updatePatch($id, $request);
 
+            return response()->json(['success' => $user], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
@@ -78,7 +67,7 @@ class UserController extends Controller
     {
         try {
             $user =  $this->userRepository->delete($id);
-            return response()->json(['sucess' => 'Usuário deletado com sucesso.'], 200);
+            return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }

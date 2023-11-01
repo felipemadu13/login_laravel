@@ -24,32 +24,27 @@ class UserRepository extends Repository
        return $user;
     }
 // no controller você tipou as variaveis deve tipar aqui também
-    public function updatePut($id)
+    public function updatePut(string $id, $attributes)
     {
-        // você não pode usar a função global request() receba uma varial com essas informações
-        // exemplo updatePut($id, $attributes)
-        // cada vez que você usa o request() você está fazendo uma injeção de dependência
-        // Testabilidade fica dificil de testar
+
         $user = $this->update($id, [
-            'firstName' => request()->firstName,
-            'lastName' => request()->lastName,
-            'email' => request()->email,
-            'cpf' => request()->cpf,
-            'phone' => request()->phone,
-            'type' => request()->type
+            'firstName' => $attributes->firstName,
+            'lastName' => $attributes->lastName,
+            'email' => $attributes->email,
+            'cpf' => $attributes->cpf,
+            'phone' => $attributes->phone,
+            'type' => $attributes->type
         ]);
         return $user;
     }
 // no controller você tipou as variaveis deve tipar aqui também
-    public function updatePatch($id)
+    public function updatePatch(string $id, $attributes)
     {
-        // você não pode usar a função global request() receba uma varial com essas informações
-        // exemplo updatePatch($id, $attributes)
-        // cada vez que você usa o request() você está fazendo uma injeção de dependência
-        // Testabilidade fica dificil de testar
+
         $user = $this->update($id, [
-            'password' => bcrypt(request()->password)
+            'password' => bcrypt($attributes->password)
         ]);
+
         return $user;
     }
 }

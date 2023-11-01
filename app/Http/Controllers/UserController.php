@@ -39,7 +39,7 @@ class UserController extends Controller
         }
     }
 
-    public function show(string $id)
+    public function show(int $id)
     {
         try {
             $users =  $this->userRepository->findById($id);
@@ -49,7 +49,7 @@ class UserController extends Controller
         }
     }
 
-    public function update(UserRequest $request, string $id)
+    public function update(UserRequest $request, int $id)
     {
         try {
             $user = $request->method() == "PUT"
@@ -63,7 +63,7 @@ class UserController extends Controller
 
     }
 
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
         try {
             $user =  $this->userRepository->delete($id);

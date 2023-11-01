@@ -24,7 +24,7 @@ class UserRepository extends Repository
        return $user;
     }
 // no controller você tipou as variaveis deve tipar aqui também
-    public function updatePut(string $id, $attributes)
+    public function updatePut(int $id, $attributes)
     {
 
         $user = $this->update($id, [
@@ -38,7 +38,7 @@ class UserRepository extends Repository
         return $user;
     }
 // no controller você tipou as variaveis deve tipar aqui também
-    public function updatePatch(string $id, $attributes)
+    public function updatePatch(int $id, $attributes)
     {
 
         $user = $this->update($id, [

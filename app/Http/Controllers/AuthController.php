@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordReset;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+
 
 class AuthController extends Controller
 {
@@ -29,7 +33,7 @@ class AuthController extends Controller
     {
         try {
             auth('api')->logout();
-            return response()->json(['sucess' => 'Sessão encerrada com sucesso'], 200);
+            return response()->json(['success' => 'Sessão encerrada com sucesso'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
@@ -38,8 +42,31 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        $newToken = auth('api')->refresh('api');
-        return $newToken;
+        try {
+            $newToken = auth('api')->refresh('api');
+            return $newToken;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+
+    }
+
+    public function passwordReset(Request $request) {
+
+        // precisa ver como é que vai ser o lance do repository
+        try {
+            $email = $request->email;
+            $findEmail = User::firstWhere('email', $email);
+
+            if($findEmail) {
+                Mail::to($email)->send(new PasswordReset());
+                return response()->json($email, 202);
+            }
+
+            return response()->json("e-mail inválido", 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
 }

@@ -20,4 +20,7 @@ Route::prefix('v1')->middleware('jwt.auth')->group(function () {
 });
     Route::post('login', [AuthController::class, "login"]);
 
-
+// Rota de Teste
+Route::prefix('teste')->group(function () {
+    Route::post('/reset', [AuthController::class, "passwordReset"]);
+});

@@ -7,7 +7,7 @@ use App\Models\User;
 class UserRepository extends Repository
 {
     protected static $model = User::class;
- // no controller você tipou as variaveis deve tipar aqui também
+
     public function register(object $attributes) {
 
        $users = self::Model()->all();
@@ -23,7 +23,7 @@ class UserRepository extends Repository
 
        return $user;
     }
-// no controller você tipou as variaveis deve tipar aqui também
+
     public function updatePut(int $id, object $attributes)
     {
 
@@ -37,7 +37,7 @@ class UserRepository extends Repository
         ]);
         return $user;
     }
-// no controller você tipou as variaveis deve tipar aqui também
+
     public function updatePatch(int $id, object $attributes)
     {
 

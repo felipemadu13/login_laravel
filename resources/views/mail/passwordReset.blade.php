@@ -7,8 +7,14 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Password Reset</h1>
-    <p>Esta é a tela de reset de password</p>
+    <h1>Solicitação de redefinição de senha</h1>
+    <p>Alguém solicitou uma nova senha para a sua conta</p>
+
+    <p>Se você não fez essa solicitação, ignore este e-mail. Se você gostaria de prosseguir:</p>
+
+    <a href="#">Clique aqui para redefinir sua senha</a>
+
+    <p>Obrigado por ler.</p>
 
 </body>
 </html>

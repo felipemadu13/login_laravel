@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Repositories\UserRepository;
+use App\Http\Requests\AuthRequest;
 use App\Mail\PasswordReset;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,6 +12,13 @@ use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+
 
     public function login(Request $request)
     {
@@ -26,7 +35,11 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(auth('api')->user());
+        try {
+            return response()->json(auth('api')->user());
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
     }
 
     public function logout()
@@ -51,22 +64,25 @@ class AuthController extends Controller
 
     }
 
-    public function passwordReset(Request $request) {
+    public function passwordEmailReset(AuthRequest $request) {
 
-        // precisa ver como é que vai ser o lance do repository
         try {
             $email = $request->email;
-            $findEmail = User::firstWhere('email', $email);
+            $findEmail = $this->userRepository->findEmail($email);
 
             if($findEmail) {
                 Mail::to($email)->send(new PasswordReset());
                 return response()->json($email, 202);
             }
 
-            return response()->json("e-mail inválido", 404);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
+    }
+
+    public function passwordReset(Request $request)
+    {
+        return response()->json("chegou na função passwordReset");
     }
 
 }

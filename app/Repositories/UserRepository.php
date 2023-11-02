@@ -47,5 +47,16 @@ class UserRepository extends Repository
 
         return $user;
     }
+
+    public function findEmail(string $data)
+    {
+        $email = User::firstWhere('email', $data);
+        if ($email == null) {
+            throw new \Exception('E-mail não cadastrado no sistema', 404);
+        }
+        return $email;
+    }
+
+
 }
 

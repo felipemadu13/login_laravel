@@ -20,7 +20,8 @@ Route::prefix('v1')->middleware('jwt.auth')->group(function () {
 });
     Route::post('login', [AuthController::class, "login"]);
 
-Route::prefix('forgot-password')->group(function () {
-    Route::post('/email', [AuthController::class, "passwordEmailReset"]);
-    Route::post('/reset', [AuthController::class, "passwordReset"]);
+Route::prefix('forgot-password')->middleware('guest')->group(function () {
+    Route::post('/', [AuthController::class, "passwordResetEmail"]);
+    Route::post('/update', [AuthController::class, "passwordResetUpdate"]);
+
 });

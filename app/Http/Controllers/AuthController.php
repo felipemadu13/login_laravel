@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -17,7 +16,7 @@ class AuthController extends Controller
         try {
             $credentials = $request->only(['email', 'password']);
             if (!$token = auth('api')->attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'Não autorizado'], 401);
             }
             return $token;
         } catch (\Exception $e) {

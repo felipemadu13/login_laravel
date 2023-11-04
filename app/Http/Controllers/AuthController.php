@@ -2,27 +2,15 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
-use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
-use Illuminate\Support\Facades\Mail;
-// use App\Mail\PasswordReset;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password as RulesPassword;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    private $userRepository;
-
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
-
 
     public function login(Request $request)
     {
@@ -68,58 +56,25 @@ class AuthController extends Controller
 
     }
 
-    // public function passwordResetEmail(AuthRequest $request) {
+    public function passwordResetEmail(AuthRequest $request)
+    {
 
-    //     try {
-    //         $email = $request->email;
-    //         $findEmail = $this->userRepository->findEmail($email);
+        $status = Password::sendResetLink($request->only('email'));
 
-    //         if($findEmail) {
-    //             Mail::to($email)->send(new PasswordReset());
-    //             return response()->json($email, 202);
-    //         }
-
-    //         // É necessário gerar um token para o reset de senha
-    //         // esse token sera usado no formulario para reset
-
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], $e->getCode());
-    //     }
-    // }
-
-    public function passwordResetEmail(Request $request) {
-
-        $request->validate(['email' => 'required|email']);
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-        if ($status == Password::RESET_LINK_SENT) {
-            return [
-                'status' => __($status)
-            ];
-        }
-
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
-        ]);
+        return $status === Password::RESET_LINK_SENT
+                ? ['status' => __($status)]
+                : ['error' => __($status)];
 
     }
 
-    public function passwordResetUpdate(Request $request)
+    public function passwordResetUpdate(AuthRequest $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', RulesPassword::defaults()],
-        ]);
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
                 $user->forceFill([
-                    'password' => Hash::make($request->password),
+                    'password' => bcrypt($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
@@ -131,7 +86,7 @@ class AuthController extends Controller
 
         if ($status == Password::PASSWORD_RESET) {
             return response([
-                'message'=> 'Password reset successfully'
+                'message'=> 'Senha alterada com sucesso'
             ]);
         }
 

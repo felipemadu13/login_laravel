@@ -15,12 +15,14 @@ class AuthController extends Controller
     {
         try {
             $credentials = $request->only(['email', 'password']);
+
             if (!$token = auth('api')->attempt($credentials)) {
                 return response()->json(['error' => 'Não autorizado'], 401);
             }
+            // isso tá errado tem que retornar um json
             return $token;
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()]);
         }
     }
 
@@ -54,10 +56,17 @@ class AuthController extends Controller
         }
 
     }
-
+    // preciso que detalhe o que essa função faz aqui no codigo  exemplo abaixo
+     /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var array<int, class-string|string>
+     */
     public function passwordResetEmail(AuthRequest $request)
     {
-
+        //cloque dentro de try catch
         $status = Password::sendResetLink($request->only('email'));
 
         return $status === Password::RESET_LINK_SENT
@@ -66,9 +75,18 @@ class AuthController extends Controller
 
     }
 
+    // preciso que detalhe o que essa função faz aqui no codigo  exemplo abaixo
+     /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var array<int, class-string|string>
+     */
+
     public function passwordResetUpdate(AuthRequest $request)
     {
-
+         //cloque dentro de try catch
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user) use ($request) {
@@ -78,7 +96,7 @@ class AuthController extends Controller
                 ])->save();
 
                 $user->tokens()->delete();
-
+                    // não gostei dessa forma de instancia uma dependência veja se consegue fazer sem o 'new'
                 event(new PasswordReset($user));
             }
         );

@@ -16,7 +16,7 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $method = $this->method();
-
+        // refatore esse codigo não precisa de dois ifs, outra coisa esse digits funciona?
         if ($method == "POST" || $method == "PUT") {
 
             return [

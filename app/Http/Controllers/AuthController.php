@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
@@ -10,7 +11,6 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-
     public function login(Request $request)
     {
         try {
@@ -19,8 +19,7 @@ class AuthController extends Controller
             if (!$token = auth('api')->attempt($credentials)) {
                 return response()->json(['error' => 'Não autorizado'], 401);
             }
-            // isso tá errado tem que retornar um json
-            return $token;
+            return response()->json(['token' => $token], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
@@ -41,7 +40,7 @@ class AuthController extends Controller
             auth('api')->logout();
             return response()->json(['success' => 'Sessão encerrada com sucesso'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()]);
         }
 
     }
@@ -56,62 +55,62 @@ class AuthController extends Controller
         }
 
     }
-    // preciso que detalhe o que essa função faz aqui no codigo  exemplo abaixo
-     /**
-     * The application's global HTTP middleware stack.
-     *
-     * These middleware are run during every request to your application.
-     *
-     * @var array<int, class-string|string>
-     */
+
+    /**
+    * A função passwordResetEmail é responsável por enviar o e-mail de recuperação de senha para o usuário.
+    *
+    * @param AuthRequest $request - O objeto de solicitação que contém os dados do usuário, incluindo o endereço de e-mail.
+    *
+    * @return array contendo um status de sucesso ou erro da operação de envio do e-mail de recuperação de senha.
+    */
     public function passwordResetEmail(AuthRequest $request)
     {
-        //cloque dentro de try catch
-        $status = Password::sendResetLink($request->only('email'));
-
-        return $status === Password::RESET_LINK_SENT
-                ? ['status' => __($status)]
-                : ['error' => __($status)];
+        try {
+            $status = Password::sendResetLink($request->only('email'));
+            return $status === Password::RESET_LINK_SENT
+                    ? ['status' => __($status)]
+                    : ['error' => __($status)];
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
 
     }
 
-    // preciso que detalhe o que essa função faz aqui no codigo  exemplo abaixo
-     /**
-     * The application's global HTTP middleware stack.
-     *
-     * These middleware are run during every request to your application.
-     *
-     * @var array<int, class-string|string>
-     */
+    /**
 
+     * A função passwordResetUpdate é responsável por atualizar a senha do usuário após uma solicitação de redefinição de senha.
+     *
+    * @param AuthRequest $request - O objeto de solicitação que contém os dados necessários para a atualização da senha (email, nova senha, confirmação da senha e token de redefinição).
+    *
+    * @return \Illuminate\Http\Response - Uma resposta HTTP indicando o resultado da operação de atualização da senha.
+    */
     public function passwordResetUpdate(AuthRequest $request)
     {
-         //cloque dentro de try catch
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
+        try {
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user) use ($request) {
+                    $user->forceFill([
                     'password' => bcrypt($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
 
-                $user->tokens()->delete();
+                    $user->tokens()->delete();
                     // não gostei dessa forma de instancia uma dependência veja se consegue fazer sem o 'new'
-                event(new PasswordReset($user));
+                    event(new PasswordReset($user));
+                }
+            );
+
+            if ($status == Password::PASSWORD_RESET) {
+                return response()->json(['message' => 'Senha alterada com sucesso']);
             }
-        );
+            return response()->json(['message' => __($status)], 500);
 
-        if ($status == Password::PASSWORD_RESET) {
-            return response([
-                'message'=> 'Senha alterada com sucesso'
-            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Ocorreu um erro inesperado ao atualizar a senha.'], 500);
         }
-
-        return response([
-            'message'=> __($status)
-        ], 500);
-
     }
+
 
 
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\UserController;
 Route::prefix('user')->group(function () {
     Route::get('/', [UserController::class, "index"]);
     Route::get('/{id}', [UserController::class, "show"]);
-    Route::post('/', [UserController::class, "store"]);
+    Route::post('/cadastro', [UserController::class, "store"]);
     Route::put('/{id}', [UserController::class, "update"]);
     Route::patch('/{id}', [UserController::class, "update"]);
     Route::delete('/{id}', [UserController::class, "destroy"]);
@@ -19,13 +19,11 @@ Route::prefix('v1')->middleware('jwt.auth')->group(function () {
     Route::post('logout', [AuthController::class, "logout"]);
     Route::post('refresh', [AuthController::class, "refresh"]);
 });
-    // não está alinhado
-    Route::post('login', [AuthController::class, "login"]);
+
+Route::post('login', [AuthController::class, "login"]);
+
 // melhore a nomeclaturas das rotas forgot-password estão confusas;
 Route::prefix('forgot-password')->middleware('guest')->group(function () {
     Route::post('/', [AuthController::class, "passwordResetEmail"]);
-    // usando verbo post mas o nome da rota é update? kkkkkkkkkkkk
-    Route::post('/update', [AuthController::class, "passwordResetUpdate"]);
-
-// pague o espaço em branco
+    Route::put('/update', [AuthController::class, "passwordResetUpdate"]);
 });

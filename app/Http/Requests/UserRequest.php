@@ -16,8 +16,9 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $method = $this->method();
-        // refatore esse codigo não precisa de dois ifs, outra coisa esse digits funciona?
-        if ($method == "POST" || $method == "PUT") {
+            if($method == "PATCH") {
+                return ['password'=>'required'];
+            }
 
             return [
                 'firstName'=> 'required',
@@ -28,12 +29,6 @@ class UserRequest extends FormRequest
                 'password'=> Rule::requiredIf($method == "POST"),
                 'type'=> Rule::requiredIf($method == "PUT")
             ];
-        }
-
-        if($method == "PATCH") {
-            return ['password'=>'required'];
-        }
-
 
     }
 

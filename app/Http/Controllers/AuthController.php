@@ -23,7 +23,7 @@ class AuthController extends Controller
             }
             return response()->json(['token' => $token], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Não foi possível criar o token'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -136,6 +136,8 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'E-mail verificado'], 200);
     }
+
+
 
 
 }

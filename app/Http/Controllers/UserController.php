@@ -64,6 +64,8 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         try {
+            // lógica de não pode alterar um id diferente do seu.
+
             $user =  $this->userRepository->delete($id);
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {

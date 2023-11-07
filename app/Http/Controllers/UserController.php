@@ -55,12 +55,10 @@ class UserController extends Controller
             $user = $request->method() == "PUT"
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
-            // ver se é 200 ou 201
-            return response()->json(['success' => $user], 201);
+            return response()->json(['success' => $user], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-
     }
 
     public function destroy(int $id)

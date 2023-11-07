@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -21,16 +23,16 @@ class AuthController extends Controller
             }
             return response()->json(['token' => $token], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Não foi possível criar o token'], 500);
         }
     }
 
     public function me()
     {
         try {
-            return response()->json(auth('api')->user());
+            return response()->json(auth('api')->user(), 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -40,7 +42,7 @@ class AuthController extends Controller
             auth('api')->logout();
             return response()->json(['success' => 'Sessão encerrada com sucesso'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
 
     }
@@ -49,9 +51,9 @@ class AuthController extends Controller
     {
         try {
             $newToken = auth('api')->refresh('api');
-            return $newToken;
+            return response()->json(['Novo Token' => $newToken], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
 
     }
@@ -71,7 +73,7 @@ class AuthController extends Controller
                     ? ['status' => __($status)]
                     : ['error' => __($status)];
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()]);
         }
 
     }
@@ -96,7 +98,7 @@ class AuthController extends Controller
                 ])->save();
 
                     $user->tokens()->delete();
-                    // não gostei dessa forma de instancia uma dependência veja se consegue fazer sem o 'new'
+
                     event(new PasswordReset($user));
                 }
             );
@@ -111,7 +113,29 @@ class AuthController extends Controller
         }
     }
 
+    public function verificationEmailSend(Request $request) {
 
+        if($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'E-mail já verificado'], 200);
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+        return response()->json(['message' => 'E-mail de verificação enviado.'], 200);
+
+    }
+
+     public function verificationEmailVerify(EmailVerificationRequest $request)
+    {
+        if($request->user()->hasVerifiedEmail()) {
+            return response()->json(['message' => 'E-mail já verificado'], 200);
+        }
+
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
+        return response()->json(['message' => 'E-mail verificado'], 200);
+    }
 
 
 }

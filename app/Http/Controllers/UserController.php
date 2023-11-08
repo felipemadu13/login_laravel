@@ -29,7 +29,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         try {
-            $user =  $this->userRepository->register($request);
+            $user =  $this->userRepository->register($request, false);
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);
             }
@@ -74,5 +74,22 @@ class UserController extends Controller
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
+
+    public function storeAdmin(UserRequest $request)
+    {
+        try {
+            $admin = $this->authorize('verifyAdmin', User::class);
+            $user =  $this->userRepository->register($request, true);
+            if(!$user) {
+                return response()->json(['error' => 'Erro ao cadastrar'], 404);
+            }
+            return response()->json(['success' => $user], 201);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+
+    }
+
 
 }

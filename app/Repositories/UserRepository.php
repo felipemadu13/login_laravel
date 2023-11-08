@@ -8,7 +8,7 @@ class UserRepository extends Repository
 {
     protected static $model = User::class;
 
-    public function register(object $attributes) {
+    public function register(object $attributes, bool $admin) {
 
        $users = self::Model()->all();
        $user = $this->create([
@@ -17,7 +17,7 @@ class UserRepository extends Repository
         'email'     => $attributes->email,
         'cpf'       => $attributes->cpf,
         'phone'     => $attributes->phone,
-        'type'      => $users->isEmpty() ? 'admin' : 'user',
+        'type'      => $users->isEmpty() || $admin ? 'admin' : 'user',
         'password'  => bcrypt($attributes->password)
      ]);
 

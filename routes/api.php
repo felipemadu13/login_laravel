@@ -23,9 +23,12 @@ Route::prefix('v1')->middleware(['jwt.auth'])->group(function () {
         Route::put('/atualizar/{id}', [UserController::class, "update"]);
         Route::patch('/atualizar-senha/{id}', [UserController::class, "update"]);
         Route::delete('/deletar/{id}', [UserController::class, "destroy"]);
+        // Rota para criar admin:
+        Route::post('cadastro/admin', [UserController::class, "storeAdmin"]);
     });
 
     Route::post('/email-verificacao', [AuthController::class, "verificationEmailSend"]);
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, "verificationEmailVerify"])->name('verification.verify');
 });
+
 

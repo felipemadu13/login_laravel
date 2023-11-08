@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 
@@ -42,6 +43,7 @@ class UserController extends Controller
     public function show(int $id)
     {
         try {
+            $this->authorize('verifyUserAuthorization', [User::class, $id]);
             $users =  $this->userRepository->findById($id);
             return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
@@ -52,6 +54,7 @@ class UserController extends Controller
     public function update(UserRequest $request, int $id)
     {
         try {
+            $this->authorize('verifyUserAuthorization', [User::class, $id]);
             $user = $request->method() == "PUT"
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
@@ -64,8 +67,7 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         try {
-            // lógica de não pode alterar um id diferente do seu.
-
+            $this->authorize('verifyUserAuthorization', [User::class, $id]);
             $user =  $this->userRepository->delete($id);
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {

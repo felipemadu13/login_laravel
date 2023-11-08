@@ -73,7 +73,7 @@ class AuthController extends Controller
                     ? ['status' => __($status)]
                     : ['error' => __($status)];
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
 
     }
@@ -109,32 +109,44 @@ class AuthController extends Controller
             return response()->json(['message' => __($status)], 500);
 
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Ocorreu um erro inesperado ao atualizar a senha.'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function verificationEmailSend(Request $request) {
 
-        if($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'E-mail já verificado'], 200);
+        try {
+
+            if($request->user()->hasVerifiedEmail()) {
+                return response()->json(['message' => 'E-mail já verificado'], 200);
+            }
+
+            $request->user()->sendEmailVerificationNotification();
+            return response()->json(['message' => 'E-mail de verificação enviado.'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
 
-        $request->user()->sendEmailVerificationNotification();
-        return response()->json(['message' => 'E-mail de verificação enviado.'], 200);
 
     }
 
      public function verificationEmailVerify(EmailVerificationRequest $request)
     {
-        if($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'E-mail já verificado'], 200);
-        }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new Verified($request->user()));
-        }
+        try {
+            if($request->user()->hasVerifiedEmail()) {
+                return response()->json(['message' => 'E-mail já verificado'], 200);
+            }
 
-        return response()->json(['message' => 'E-mail verificado'], 200);
+            if ($request->user()->markEmailAsVerified()) {
+                event(new Verified($request->user()));
+            }
+
+            return response()->json(['message' => 'E-mail verificado'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
 

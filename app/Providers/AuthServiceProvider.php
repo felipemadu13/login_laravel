@@ -35,15 +35,7 @@ class AuthServiceProvider extends ServiceProvider
                 ->action('Verificar E-mail', $spaUrl);
         });
 
-        Gate::define('show', function(User $user, $id) {
-            return $user->type == 'admin' || $user->id == $id;
-        });
-
-        Gate::define('update', function(User $user, $id) {
-            return $user->type == 'admin' || $user->id == $id;
-        });
-
-        Gate::define('destroy', function(User $user, $id) {
+        Gate::define('verifyAuthorization', function(User $user, $id) {
             return $user->type == 'admin' || $user->id == $id;
         });
 

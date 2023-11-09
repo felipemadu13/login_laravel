@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-use Illuminate\Http\Request;
 
 
 class UserPolicy
@@ -70,16 +69,6 @@ class UserPolicy
     public function forceDelete(User $user, User $model): bool
     {
         //
-    }
-
-    /**
-     * Verifica se o usuário é administrador ou se é o mesmo usuário que faz a requisição.
-     */
-    public function verifyUserAuthorization(User $user, $id): Response
-    {
-        return $user->type == 'admin' || $user->id == $id
-        ? Response::allow()
-        : throw new \Exception("Não autorizado", 403);
     }
 
     /**

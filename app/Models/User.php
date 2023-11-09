@@ -67,9 +67,6 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
      */
     public function getJWTCustomClaims()
     {
-        // mandar qual é o tipo de usuário
-        // acrescentar o type do usuário
-        // verificar se id é o mesmo id
         return ["name" => $this->firstName];
     }
 

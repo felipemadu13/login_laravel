@@ -43,7 +43,7 @@ class UserController extends Controller
     public function show(int $id)
     {
         try {
-            $this->authorize('verifyUserAuthorization', [User::class, $id]);
+            $this->authorize('view', [User::class, $id]);
             $users =  $this->userRepository->findById($id);
             return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
@@ -54,7 +54,7 @@ class UserController extends Controller
     public function update(UserRequest $request, int $id)
     {
         try {
-            $this->authorize('verifyUserAuthorization', [User::class, $id]);
+            $this->authorize('update', [User::class, $id]);
             $user = $request->method() == "PUT"
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
@@ -67,7 +67,7 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         try {
-            $this->authorize('verifyUserAuthorization', [User::class, $id]);
+            $this->authorize('delete', [User::class, $id]);
             $user =  $this->userRepository->delete($id);
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
@@ -78,7 +78,7 @@ class UserController extends Controller
     public function storeAdmin(UserRequest $request)
     {
         try {
-            $admin = $this->authorize('verifyAdmin', User::class);
+            $this->authorize('verifyAdmin', User::class);
             $user =  $this->userRepository->register($request, true);
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);

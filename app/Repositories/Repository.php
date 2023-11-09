@@ -49,7 +49,6 @@ abstract class Repository
     public  function delete(int $id)
     {
 
-        // dd(auth()->user()->id);
         $model   = $this->findById($id);
         $delete  = $model->delete();
 

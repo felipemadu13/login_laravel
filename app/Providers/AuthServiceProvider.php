@@ -3,9 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
-use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
-
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -18,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        User::class => UserPolicy::class,
+
     ];
 
     /**
@@ -35,6 +33,22 @@ class AuthServiceProvider extends ServiceProvider
                 ->subject('Verifição de E-mail')
                 ->line('Clique no botão abaixo para verificar o seu e-mail')
                 ->action('Verificar E-mail', $spaUrl);
+        });
+
+        Gate::define('show', function(User $user, $id) {
+            return $user->type == 'admin' || $user->id == $id;
+        });
+
+        Gate::define('update', function(User $user, $id) {
+            return $user->type == 'admin' || $user->id == $id;
+        });
+
+        Gate::define('destroy', function(User $user, $id) {
+            return $user->type == 'admin' || $user->id == $id;
+        });
+
+        Gate::define('storeAdmin', function(User $user) {
+            return $user->type == 'admin';
         });
     }
 }

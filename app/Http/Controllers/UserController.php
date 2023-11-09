@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -43,7 +44,9 @@ class UserController extends Controller
     public function show(int $id)
     {
         try {
-            $this->authorize('view', [User::class, $id]);
+            if (!Gate::allows('show', $id)) {
+                return response()->json(['error' => 'usuário não autorizado'], 403);
+            }
             $users =  $this->userRepository->findById($id);
             return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
@@ -54,7 +57,9 @@ class UserController extends Controller
     public function update(UserRequest $request, int $id)
     {
         try {
-            $this->authorize('update', [User::class, $id]);
+            if (!Gate::allows('update', $id)) {
+                return response()->json(['error' => 'usuário não autorizado'], 403);
+            }
             $user = $request->method() == "PUT"
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
@@ -67,7 +72,9 @@ class UserController extends Controller
     public function destroy(int $id)
     {
         try {
-            $this->authorize('delete', [User::class, $id]);
+            if (!Gate::allows('destroy', $id)) {
+                return response()->json(['error' => 'usuário não autorizado'], 403);
+            }
             $user =  $this->userRepository->delete($id);
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
@@ -78,7 +85,9 @@ class UserController extends Controller
     public function storeAdmin(UserRequest $request)
     {
         try {
-            $this->authorize('verifyAdmin', User::class);
+            if (!Gate::allows('storeAdmin')) {
+                return response()->json(['error' => 'usuário não autorizado'], 403);
+            }
             $user =  $this->userRepository->register($request, true);
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);

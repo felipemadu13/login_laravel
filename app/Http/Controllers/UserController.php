@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
@@ -16,6 +15,7 @@ class UserController extends Controller
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
+
     }
 
     public function index(Request $request)
@@ -50,12 +50,6 @@ class UserController extends Controller
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
 
-            Log::info('O {type} de id:{id} acessou informação do usuário:{targetId}', [
-                'type' => auth()->user()->type,
-                'id' => auth()->user()->id,
-                'targetId' => $id
-            ]);
-
             $users =  $this->userRepository->findById($id);
             return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
@@ -72,6 +66,13 @@ class UserController extends Controller
             $user = $request->method() == "PUT"
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
+
+            Log::info('O {type} de id:{id} atualizou as informações do usuário:{targetId}', [
+                'type' => auth()->user()->type,
+                'id' => auth()->user()->id,
+                'targetId' => $id
+            ]);
+
             return response()->json(['success' => $user], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -85,6 +86,13 @@ class UserController extends Controller
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
             $user =  $this->userRepository->delete($id);
+
+            Log::info('O {type} de id:{id} apagou o usuário:{targetId}', [
+                'type' => auth()->user()->type,
+                'id' => auth()->user()->id,
+                'targetId' => $id
+            ]);
+
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());

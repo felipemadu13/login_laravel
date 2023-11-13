@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Illuminate\Support\Facades\Log;
+
 abstract class Repository
 {
     protected static $model;

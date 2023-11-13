@@ -6,7 +6,6 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -67,12 +66,6 @@ class UserController extends Controller
             ? $this->userRepository->updatePut($id, $request)
             : $this->userRepository->updatePatch($id, $request);
 
-            Log::info('O {type} de id:{id} atualizou as informações do usuário:{targetId}', [
-                'type' => auth()->user()->type,
-                'id' => auth()->user()->id,
-                'targetId' => $id
-            ]);
-
             return response()->json(['success' => $user], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -87,11 +80,11 @@ class UserController extends Controller
             }
             $user =  $this->userRepository->delete($id);
 
-            Log::info('O {type} de id:{id} apagou o usuário:{targetId}', [
-                'type' => auth()->user()->type,
-                'id' => auth()->user()->id,
-                'targetId' => $id
-            ]);
+            // Log::info('O {type} de id:{id} apagou o usuário:{targetId}', [
+            //     'type' => auth()->user()->type,
+            //     'id' => auth()->user()->id,
+            //     'targetId' => $id
+            // ]);
 
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {

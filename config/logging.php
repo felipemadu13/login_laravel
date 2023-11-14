@@ -1,5 +1,6 @@
 <?php
 
+use \App\Logging\CustomizeFormatter;
 use Monolog\Formatter\MongoDBFormatter;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Handler\NullHandler;
@@ -132,13 +133,13 @@ return [
             'driver'  => 'monolog',
             'handler' => MongoDBHandler::class,
             'formatter' => MongoDBFormatter::class,
+            'tap' => [CustomizeFormatter::class],
             'handler_with' => [
                 'mongodb' => new \MongoDB\Client("mongodb://localhost:27017"),
                 'level' => 'info',
                 'database' => env('MONGO_DB_DATABASE'),
                 'collection' => 'logs'
-            ],
-            'processors' => [],
+            ]
         ],
     ],
 

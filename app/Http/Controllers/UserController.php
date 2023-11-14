@@ -6,6 +6,8 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
+
 
 class UserController extends Controller
 {
@@ -80,12 +82,6 @@ class UserController extends Controller
             }
             $user =  $this->userRepository->delete($id);
 
-            // Log::info('O {type} de id:{id} apagou o usuário:{targetId}', [
-            //     'type' => auth()->user()->type,
-            //     'id' => auth()->user()->id,
-            //     'targetId' => $id
-            // ]);
-
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
@@ -95,7 +91,7 @@ class UserController extends Controller
     public function storeAdmin(UserRequest $request)
     {
         try {
-            if (!Gate::allows('storeAdmin')) {
+            if (!Gate::allows('isAdmin')) {
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
             $user =  $this->userRepository->register($request, true);
@@ -107,8 +103,33 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-
     }
 
+    public function changeUserStatus(Request $request, int $id)
+    {
+        try {
+            if (!Gate::allows('isAdmin')) {
+                return response()->json(['error' => 'Usuário não autorizado.'], 403);
+            }
+
+           $request->validate([
+                'status' => ['required','boolean'],
+           ]);
+
+            $user = $this->userRepository->update($id, [
+                'status' => $request->status
+            ]);
+
+            return response()->json(['success' => $user], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
+        }
+
+    // } catch (ValidationException $e) {
+    //     return response()->json(['error' => 'status inválido'], 404);
+    // } catch (\Exception $e) {
+    //     return response()->json(['error' => $e->getMessage()], $e->getCode());
+    // }
+    }
 
 }

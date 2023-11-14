@@ -6,7 +6,6 @@ use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
-use MongoDB\Client;
 
 return [
 
@@ -135,12 +134,11 @@ return [
             'formatter' => MongoDBFormatter::class,
             'handler_with' => [
                 'mongodb' => new \MongoDB\Client("mongodb://localhost:27017"),
-                'host' => env('MONGO_DB_HOST'),
-                'port' => env('MONGO_DB_PORT'),
                 'level' => 'info',
                 'database' => env('MONGO_DB_DATABASE'),
                 'collection' => 'logs'
             ],
+            'processors' => [],
         ],
     ],
 

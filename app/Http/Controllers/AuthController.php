@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
+use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -13,9 +14,14 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+
     public function login(Request $request)
     {
         try {
+            if (User::where('email', $request->email)->first()->status == false) {
+                return response()->json(['error' => 'Usuário inativo']);
+            }
+
             $credentials = $request->only(['email', 'password']);
             if (!$token = auth('api')->attempt($credentials)) {
                 return response()->json(['error' => 'Não autorizado'], 401);

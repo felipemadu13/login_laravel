@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
@@ -26,10 +25,10 @@ Route::prefix('v1')->middleware(['jwt.auth'])->group(function () {
         Route::patch('/atualizar-senha/{id}', [UserController::class, "update"]);
         Route::delete('/deletar/{id}', [UserController::class, "destroy"]);
         Route::post('cadastro/admin', [UserController::class, "storeAdmin"]);
+        Route::patch('/mudar-status/{id}',[UserController::class, 'changeUserStatus']);
     });
 
     Route::post('/email-verificacao', [AuthController::class, "verificationEmailSend"]);
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, "verificationEmailVerify"])->name('verification.verify');
 });
-
 

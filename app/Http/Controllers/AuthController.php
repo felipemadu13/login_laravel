@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -28,8 +27,6 @@ class AuthController extends Controller
 
             // Esta linha forçará um erro fatal ao tentar chamar um método inexistente
             // $user->undefinedMethod();
-
-            Log::channel('user')->info("teste", ['user_id' => $user->id, 'cpf' => $user->cpf]);
 
             $credentials = $request->only(['email', 'password']);
             if (!$token = auth('api')->attempt($credentials)) {

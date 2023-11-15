@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -72,13 +73,14 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(int $id)
+    public function destroy(Request $request, int $id)
     {
         try {
             if (!Gate::allows('verifyAuthorization', $id)) {
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
-            $user =  $this->userRepository->delete($id);
+
+            $user = $this->userRepository->userDelete($id, $request);
 
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {

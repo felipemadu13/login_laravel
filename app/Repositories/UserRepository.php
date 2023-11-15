@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Expr\Cast\Object_;
 
 class UserRepository extends Repository
 {
@@ -27,8 +28,7 @@ class UserRepository extends Repository
 
     public function updatePut(int $id, object $attributes)
     {
-
-        $this->logUpdate($id, $attributes);
+        $this->log($id, $attributes, true);
         $user = $this->update($id, [
             'firstName' => $attributes->firstName,
             'lastName' => $attributes->lastName,
@@ -42,7 +42,7 @@ class UserRepository extends Repository
 
     public function updatePatch(int $id, object $attributes)
     {
-        $this->logUpdate($id, $attributes);
+        $this->log($id, $attributes, true);
         $user = $this->update($id, [
             'password' => bcrypt($attributes->password)
         ]);
@@ -50,23 +50,34 @@ class UserRepository extends Repository
         return $user;
     }
 
-    public function logUpdate(int $id, object $attributes)
+    public function userDelete(int $id, object $attributes)
     {
+        $this->log($id, $attributes, false);
         $user = $this->findById($id);
-        Log::info('{type}:{firstName} id:{id} cpf:{cpf} IP:{ip} atualizou as informações do {targetType}:{targetfirstName} de CPF:{targetCPF} de id:{targetId}', [
-            'type' => auth()->user()->type,
-            'firstName' => auth()->user()->firstName,
-            'id' => auth()->user()->id,
-            'cpf' => auth()->user()->cpf,
-            'ip' => $attributes->ip(),
-            'targetType' => $user->type,
-            'targetfirstName' => $user->firstName,
-            'targetLastName' => $user->lastName,
-            'targetCPF' => $user->cpf,
-            'targetId' => $user->id
-        ]);
-
+        $this->delete($id);
     }
+
+    public function log(int $id, object $attributes, $message)
+    {
+
+        $message ? $message = 'ATUALIZOU' : $message = 'APAGOU';
+
+        $auth = auth()->user();
+        $user = $this->findById($id);
+        Log::channel('user')->info("{$auth->type}: {$auth->firstName} cpf: {$auth->cpf} ip: {$attributes->ip()} {$message} informações de {$user->type}: {$user->firstName} {$user->lastName} cpf: {$user->cpf}", [
+            'autenticado tipo' => auth()->user()->type,
+            'autenticado nome' => auth()->user()->firstName,
+            'autenticado id' => auth()->user()->id,
+            'autenticado cpf' => auth()->user()->cpf,
+            'autenticado ip' => $attributes->ip(),
+            'usuario alvo tipo' => $user->type,
+            'usuario alvo nome' => $user->firstName,
+            'usuario alvo sobrenome' => $user->lastName,
+            'usuario alvo cpf' => $user->cpf,
+            'usuario alvo id' => $user->id
+        ]);
+    }
+
 
 }
 

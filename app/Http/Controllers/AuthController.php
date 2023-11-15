@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -18,9 +19,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            if (User::where('email', $request->email)->first()->status == false) {
+            $user = User::where('email', $request->email)->first();
+
+            // Verifique se $user é nulo antes de acessar sua propriedade, se o banco estiver vazio vai um erro desconhecido caso não faça isso.
+            if (!$user || !$user->status) {
                 return response()->json(['error' => 'Usuário inativo']);
             }
+
+            // Esta linha forçará um erro fatal ao tentar chamar um método inexistente
+            // $user->undefinedMethod();
+
+            Log::channel('user')->info("teste", ['user_id' => $user->id, 'cpf' => $user->cpf]);
 
             $credentials = $request->only(['email', 'password']);
             if (!$token = auth('api')->attempt($credentials)) {
@@ -28,9 +37,10 @@ class AuthController extends Controller
             }
             return response()->json(['token' => $token], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
+
 
     public function me()
     {
@@ -109,7 +119,7 @@ class AuthController extends Controller
             );
 
             if ($status == Password::PASSWORD_RESET) {
-                return response()->json(['message' => 'Senha alterada com sucesso']);
+                return response()->json(['message' => 'Senha alterada com sucesso'], 200);
             }
             return response()->json(['message' => __($status)], 500);
 

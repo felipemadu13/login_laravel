@@ -6,8 +6,6 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\ValidationException;
-
 
 class UserController extends Controller
 {

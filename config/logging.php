@@ -1,12 +1,13 @@
 <?php
 
-use \App\Logging\CustomizeFormatter;
+use App\Log\MongoLevelVerify;
 use Monolog\Formatter\MongoDBFormatter;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
+
 
 return [
 
@@ -57,7 +58,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single','mongodb'],
+            'channels' => ['single'],
             'ignore_exceptions' => false,
         ],
 
@@ -129,11 +130,10 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
-        'mongodb' => [
+        'user' => [
             'driver'  => 'monolog',
             'handler' => MongoDBHandler::class,
             'formatter' => MongoDBFormatter::class,
-            'tap' => [CustomizeFormatter::class],
             'handler_with' => [
                 'mongodb' => new \MongoDB\Client("mongodb://localhost:27017"),
                 'level' => 'info',

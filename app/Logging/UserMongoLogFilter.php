@@ -14,7 +14,6 @@ class UserMongoLogFilter
      */
     public function __invoke(Logger $logger)
     {
-        // Adicione um processador (handler) personalizado para filtrar os registros
         $logger->pushProcessor([$this, 'filterRecords']);
     }
 

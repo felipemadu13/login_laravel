@@ -122,13 +122,10 @@ class UserController extends Controller
 
             return response()->json(['success' => $user], 200);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => 'Status é Obrigatório!'], 422);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
-
-
-
     }
 
 }

@@ -30,11 +30,11 @@ class UserRepository extends Repository
         $this->log($id, $attributes, 'ATUALIZOU');
         $user = $this->update($id, [
             'firstName' => $attributes->firstName,
-            'lastName' => $attributes->lastName,
-            'email' => $attributes->email,
-            'cpf' => $attributes->cpf,
-            'phone' => $attributes->phone,
-            'type' => $attributes->type
+            'lastName'  => $attributes->lastName,
+            'email'     => $attributes->email,
+            'cpf'       => $attributes->cpf,
+            'phone'     => $attributes->phone,
+            'type'      => $attributes->type
         ]);
         return $user;
     }
@@ -62,20 +62,18 @@ class UserRepository extends Repository
         $auth = auth()->user();
         $user = $this->findById($id);
         Log::channel('user')->info("{$auth->type}: {$auth->firstName} cpf: {$auth->cpf} ip: {$attributes->ip()} {$message} informações de {$user->type}: {$user->firstName} {$user->lastName} cpf: {$user->cpf}", [
-            'autenticado metodo' => $attributes->method(),
-            'autenticado tipo' => auth()->user()->type,
-            'autenticado nome' => auth()->user()->firstName,
-            'autenticado id' => auth()->user()->id,
-            'autenticado cpf' => auth()->user()->cpf,
-            'autenticado ip' => $attributes->ip(),
-            'usuario alvo tipo' => $user->type,
-            'usuario alvo nome' => $user->firstName,
+            'autenticado metodo'     => $attributes->method(),
+            'autenticado tipo'       => auth()->user()->type,
+            'autenticado nome'       => auth()->user()->firstName,
+            'autenticado id'         => auth()->user()->id,
+            'autenticado cpf'        => auth()->user()->cpf,
+            'autenticado ip'         => $attributes->ip(),
+            'usuario alvo tipo'      => $user->type,
+            'usuario alvo nome'      => $user->firstName,
             'usuario alvo sobrenome' => $user->lastName,
-            'usuario alvo cpf' => $user->cpf,
-            'usuario alvo id' => $user->id
+            'usuario alvo cpf'       => $user->cpf,
+            'usuario alvo id'        => $user->id
         ]);
     }
-
-
 }
 

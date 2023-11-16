@@ -11,7 +11,6 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AuthController extends Controller
 {
@@ -19,24 +18,20 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $user = User::where('email', $request->email)->firstOrFail();
+            $user = User::where('email', $request->email)->first();
 
             if (!$user || !$user->status) {
                 return response()->json(['error' => 'Usuário inativo']);
             }
 
-            // Esta linha forçará um erro fatal ao tentar chamar um método inexistente
-            // $user->undefinedMethod();
-
             $credentials = $request->only(['email', 'password']);
             if (!$token = auth('api')->attempt($credentials)) {
-                return response()->json(['error' => 'Não autorizado'], 401);
+                return response()->json(['error' => 'Senha ou email inválido'], 401);
             }
+
             return response()->json(['token' => $token], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -57,7 +52,6 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
     }
 
     public function refresh()
@@ -68,37 +62,35 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
     }
 
     /**
-    * A função passwordResetEmail é responsável por enviar o e-mail de recuperação de senha para o usuário.
-    *
-    * @param AuthRequest $request - O objeto de solicitação que contém os dados do usuário, incluindo o endereço de e-mail.
-    *
-    * @return array contendo um status de sucesso ou erro da operação de envio do e-mail de recuperação de senha.
-    */
+     * A função passwordResetEmail é responsável por enviar o e-mail de recuperação de senha para o usuário.
+     *
+     * @param AuthRequest $request - O objeto de solicitação que contém os dados do usuário, incluindo o endereço de e-mail.
+     *
+     * @return array contendo um status de sucesso ou erro da operação de envio do e-mail de recuperação de senha.
+     */
     public function passwordResetEmail(AuthRequest $request)
     {
         try {
             $status = Password::sendResetLink($request->only('email'));
             return $status === Password::RESET_LINK_SENT
-                    ? ['status' => __($status)]
-                    : ['error' => __($status)];
+                ? ['status' => __($status)]
+                : ['error' => __($status)];
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
     }
 
     /**
 
      * A função passwordResetUpdate é responsável por atualizar a senha do usuário após uma solicitação de redefinição de senha.
      *
-    * @param AuthRequest $request - O objeto de solicitação que contém os dados necessários para a atualização da senha (email, nova senha, confirmação da senha e token de redefinição).
-    *
-    * @return \Illuminate\Http\Response - Uma resposta HTTP indicando o resultado da operação de atualização da senha.
-    */
+     * @param AuthRequest $request - O objeto de solicitação que contém os dados necessários para a atualização da senha (email, nova senha, confirmação da senha e token de redefinição).
+     *
+     * @return \Illuminate\Http\Response - Uma resposta HTTP indicando o resultado da operação de atualização da senha.
+     */
     public function passwordResetUpdate(AuthRequest $request)
     {
         try {
@@ -106,9 +98,9 @@ class AuthController extends Controller
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user) use ($request) {
                     $user->forceFill([
-                    'password' => bcrypt($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+                        'password'       => bcrypt($request->password),
+                        'remember_token' => Str::random(60),
+                    ])->save();
 
                     $user->tokens()->delete();
 
@@ -120,35 +112,32 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Senha alterada com sucesso'], 200);
             }
             return response()->json(['message' => __($status)], 500);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function verificationEmailSend(Request $request) {
+    public function verificationEmailSend(Request $request)
+    {
 
         try {
 
-            if($request->user()->hasVerifiedEmail()) {
+            if ($request->user()->hasVerifiedEmail()) {
                 return response()->json(['message' => 'E-mail já verificado'], 200);
             }
 
             $request->user()->sendEmailVerificationNotification();
             return response()->json(['message' => 'E-mail de verificação enviado.'], 200);
-
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
-
     }
 
-     public function verificationEmailVerify(EmailVerificationRequest $request)
+    public function verificationEmailVerify(EmailVerificationRequest $request)
     {
 
         try {
-            if($request->user()->hasVerifiedEmail()) {
+            if ($request->user()->hasVerifiedEmail()) {
                 return response()->json(['message' => 'E-mail já verificado'], 200);
             }
 
@@ -161,8 +150,4 @@ class AuthController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
-
-
 }

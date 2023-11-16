@@ -18,20 +18,18 @@ class UserMongoLogFilter
     }
 
     /**
-     * Filtra os registros com base em algum critério.
+     * Filtra os registros com base do id do user.
      *
      * @param  array  $record
      * @return array|null
      */
     public function filterRecords(array $record)
     {
-        // Personalize esta lógica para filtrar os registros com base no tipo de erro ou outras condições
-        // Por exemplo, aceitar apenas registros com um contexto 'user_id'
+
         if (isset($record['context']['user_id'])) {
-            return $record; // Aceita registros com 'user_id'
+            return $record;
         }
 
-        // Ignora outros tipos de registros
         return null;
     }
 }

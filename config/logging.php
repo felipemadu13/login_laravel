@@ -1,6 +1,5 @@
 <?php
 
-use App\Log\MongoLevelVerify;
 use Monolog\Formatter\MongoDBFormatter;
 use Monolog\Handler\MongoDBHandler;
 use Monolog\Handler\NullHandler;

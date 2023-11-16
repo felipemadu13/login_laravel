@@ -6,7 +6,7 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -32,7 +32,7 @@ class UserController extends Controller
     {
         try {
 
-            $user =  $this->userRepository->register($request, false);
+            $user =  $this->userRepository->register($request, 'user');
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);
             }
@@ -94,7 +94,7 @@ class UserController extends Controller
             if (!Gate::allows('isAdmin')) {
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
-            $user =  $this->userRepository->register($request, true);
+            $user =  $this->userRepository->register($request, 'admin');
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);
             }
@@ -121,15 +121,14 @@ class UserController extends Controller
             ]);
 
             return response()->json(['success' => $user], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
 
-    // } catch (ValidationException $e) {
-    //     return response()->json(['error' => 'status inválido'], 404);
-    // } catch (\Exception $e) {
-    //     return response()->json(['error' => $e->getMessage()], $e->getCode());
-    // }
+
+
     }
 
 }

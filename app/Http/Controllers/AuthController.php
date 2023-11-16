@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AuthController extends Controller
 {
@@ -18,9 +19,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         try {
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->firstOrFail();
 
-            // Verifique se $user é nulo antes de acessar sua propriedade, se o banco estiver vazio vai um erro desconhecido caso não faça isso.
             if (!$user || !$user->status) {
                 return response()->json(['error' => 'Usuário inativo']);
             }
@@ -33,11 +33,12 @@ class AuthController extends Controller
                 return response()->json(['error' => 'Não autorizado'], 401);
             }
             return response()->json(['token' => $token], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode());
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
     }
-
 
     public function me()
     {

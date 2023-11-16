@@ -4,13 +4,12 @@ namespace App\Repositories;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Node\Expr\Cast\Object_;
 
 class UserRepository extends Repository
 {
     protected static $model = User::class;
 
-    public function register(object $attributes, bool $admin) {
+    public function register(object $attributes, string $admin) {
 
        $users = self::Model()->all();
        $user = $this->create([
@@ -19,7 +18,7 @@ class UserRepository extends Repository
         'email'     => $attributes->email,
         'cpf'       => $attributes->cpf,
         'phone'     => $attributes->phone,
-        'type'      => $users->isEmpty() || $admin ? 'admin' : 'user',
+        'type'      => $users->isEmpty() || $admin == 'admin' ? 'admin' : 'user',
         'password'  => bcrypt($attributes->password)
      ]);
 
@@ -28,7 +27,7 @@ class UserRepository extends Repository
 
     public function updatePut(int $id, object $attributes)
     {
-        $this->log($id, $attributes, true);
+        $this->log($id, $attributes, 'ATUALIZOU');
         $user = $this->update($id, [
             'firstName' => $attributes->firstName,
             'lastName' => $attributes->lastName,
@@ -42,7 +41,7 @@ class UserRepository extends Repository
 
     public function updatePatch(int $id, object $attributes)
     {
-        $this->log($id, $attributes, true);
+        $this->log($id, $attributes, 'ATUALIZOU');
         $user = $this->update($id, [
             'password' => bcrypt($attributes->password)
         ]);
@@ -52,19 +51,18 @@ class UserRepository extends Repository
 
     public function userDelete(int $id, object $attributes)
     {
-        $this->log($id, $attributes, false);
+        $this->log($id, $attributes, 'APAGOU');
         $user = $this->findById($id);
         $this->delete($id);
     }
 
-    public function log(int $id, object $attributes, $message)
+    public function log(int $id, object $attributes, string $message)
     {
-
-        $message ? $message = 'ATUALIZOU' : $message = 'APAGOU';
 
         $auth = auth()->user();
         $user = $this->findById($id);
         Log::channel('user')->info("{$auth->type}: {$auth->firstName} cpf: {$auth->cpf} ip: {$attributes->ip()} {$message} informações de {$user->type}: {$user->firstName} {$user->lastName} cpf: {$user->cpf}", [
+            'autenticado metodo' => $attributes->method(),
             'autenticado tipo' => auth()->user()->type,
             'autenticado nome' => auth()->user()->firstName,
             'autenticado id' => auth()->user()->id,

@@ -62,17 +62,17 @@ class UserRepository extends Repository
         $auth = auth()->user();
         $user = $this->findById($id);
         Log::channel('user')->info("{$auth->type}: {$auth->firstName} cpf: {$auth->cpf} ip: {$attributes->ip()} {$message} informações de {$user->type}: {$user->firstName} {$user->lastName} cpf: {$user->cpf}", [
-            'autenticado metodo'     => $attributes->method(),
-            'autenticado tipo'       => auth()->user()->type,
-            'autenticado nome'       => auth()->user()->firstName,
-            'autenticado id'         => auth()->user()->id,
-            'autenticado cpf'        => auth()->user()->cpf,
-            'autenticado ip'         => $attributes->ip(),
-            'usuario alvo tipo'      => $user->type,
-            'usuario alvo nome'      => $user->firstName,
-            'usuario alvo sobrenome' => $user->lastName,
-            'usuario alvo cpf'       => $user->cpf,
-            'usuario alvo id'        => $user->id
+            'autenticado_metodo'     => $attributes->method(),
+            'autenticado_tipo'       => $auth->type,
+            'autenticado_nome'       => $auth->firstName,
+            'autenticado_id'         => $auth->id,
+            'autenticado_cpf'        => $auth->cpf,
+            'autenticado_ip'         => $attributes->ip(),
+            'usuario_alvo_tipo'      => $user->type,
+            'usuario_alvo_nome'      => $user->firstName,
+            'usuario_alvo_sobrenome' => $user->lastName,
+            'usuario_alvo_cpf'       => $user->cpf,
+            'usuario_alvo_id'        => $user->id
         ]);
     }
 }

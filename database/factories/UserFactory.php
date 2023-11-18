@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'cpf' => fake()->unique()->numerify('###########'),
             'phone' => fake()->numerify('##99#######'),
-            'type' => 'admin',
+            'type' => 'user',
             'password' => 'foo',
         ];
     }

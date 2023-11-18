@@ -17,7 +17,8 @@ class UserTest extends TestCase
      */
     public function test_user_can_create_a_account(): void
     {
-        $response = $this->post('/api/user/cadastro', [
+
+        $response = $this->json('POST', '/api/user/cadastro', [
             'firstName' => fake()->firstName(),
             'lastName' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
@@ -109,14 +110,17 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_auth_user_can_get_one_user()
+    public function test_auth_admin_can_get_one_user()
     {
 
-        $user1 = User::factory()->create(['email_verified_at' => Date::now()]);
-        $user2 = User::factory()->create(['email_verified_at' => Date::now()]);
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
         $login = $this->post('/api/login', [
-            'email' => $user1->email,
+            'email' => $admin->email,
             'password' => 'foo'
         ]);
 
@@ -124,37 +128,224 @@ class UserTest extends TestCase
             'Authorization' => 'Bearer' . $login->json('token'),
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->get('/api/v1/user/pegar-um/' . $user2->id);
+        ])->get('/api/v1/user/pegar-um/' . $user->id);
 
         $response->assertStatus(200);
     }
 
-    // public function test_auth_user_can_put_user()
-    // {
-    //     $user1 = User::factory()->create(['email_verified_at' => Date::now()]);
-    //     $user2 = User::factory()->create(['email_verified_at' => Date::now()]);
+    public function test_auth_user_can_get_himself()
+    {
 
-    //     dd($user2);
-    //     $login = $this->post('/api/login', [
-    //         'email' => $user1->email,
-    //         'password' => 'foo'
-    //     ]);
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-    //     $response = $this->withHeaders([
-    //         'Authorization' => 'Bearer' . $login->json('token'),
-    //         'Content-Type' => 'application/json',
-    //         'Accept' => 'application/json'
-    //     ])->put('/api/v1/user/atualizar/' . $user2->id, [
-    //         'firstName' => fake()->firstName(),
-    //         'lastName' => fake()->lastName(),
-    //         'email' => fake()->unique()->safeEmail(),
-    //         'cpf' => fake()->unique()->numerify('###########'),
-    //         'phone' => fake()->numerify('##99#######'),
-    //         'type' => 'user'
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
 
-    //     ]);
-    //     $response->assertStatus(200);
-    // }
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->get('/api/v1/user/pegar-um/' . $user->id);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_auth_admin_can_put_user()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_auth_user_can_put_himself()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_auth_admin_can_patch_user_password()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PATCH', '/api/v1/user/atualizar-senha/' . $user->id, [
+            'password' => fake()->password()
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+
+    public function test_auth_user_can_patch_password_himself()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PATCH', '/api/v1/user/atualizar-senha/' . $user->id, [
+            'password' => fake()->password()
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_auth_admin_can_delete_user()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('delete', '/api/v1/user/deletar/' . $user->id);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_auth_user_can_delete_himself()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('delete', '/api/v1/user/deletar/' . $user->id);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_auth_admin_can_create_admin()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('post', '/api/v1/user/cadastro/admin', [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ]);
+
+        $response->assertStatus(201);
+
+    }
+
+    public function test_auth_admin_can_change_user_status()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PATCH', '/api/v1/user/mudar-status/' . $user->id, [
+            'status' => false
+        ]);
+
+        $response->assertStatus(200);
+
+    }
 
 
 }

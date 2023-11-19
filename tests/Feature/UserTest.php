@@ -40,6 +40,189 @@ class UserTest extends TestCase
 
     }
 
+    public function test_user_store_firstName_required()
+    {
+        $data = [
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo first name é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_lastName_required()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo last name é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_email_required()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response->assertJson(['message' => 'O campo email é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_email_unique()
+    {
+        $dataUser1 = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => 'emaildetest@test.com',
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $dataUser2 = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => 'emaildetest@test.com',
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $responseUser1 = $this->json('POST', '/api/user/cadastro', $dataUser1);
+        $responseUser2 = $this->json('POST', '/api/user/cadastro', $dataUser2);
+
+        $responseUser2->assertJson(['message' => 'E-mail já cadastrado no sistema.']);
+        $responseUser2->assertStatus(422);
+    }
+
+    public function test_user_store_email_safe_email()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => 'email.sem.arroba.teste.com',
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo e-mail deve ser um endereço válido.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_cpf_required()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo cpf é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_cpf_unique()
+    {
+        $dataUser1 = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => '00011122233',
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $dataUser2 = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => '00011122233',
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $responseUser1 = $this->json('POST', '/api/user/cadastro', $dataUser1);
+        $responseUser2 = $this->json('POST', '/api/user/cadastro', $dataUser2);
+
+        $responseUser2->assertJson(['message' => 'CPF já cadastrado no sistema.']);
+        $responseUser2->assertStatus(422);
+    }
+
+    public function test_user_store_cpf_have_to_be_11_digits()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => '123456789',
+            'phone' => fake()->numerify('##99#######'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'CPF digitado incorretamente.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_phone_required()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo phone é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_user_store_password_required()
+    {
+        $data = [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######')
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $response->assertJson(['message' => 'O campo password é o obrigatório.']);
+        $response->assertStatus(422);
+    }
+
     public function test_user_can_login(): void
     {
         $user = User::factory()->create();
@@ -186,6 +369,9 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
+
+
+
     public function test_auth_admin_can_get_user()
     {
 
@@ -226,6 +412,32 @@ class UserTest extends TestCase
         ])->get('/api/v1/user/pegar-um/' . $user->id);
 
         $response->assertStatus(200);
+    }
+
+    public function test_unauthorized_user_should_not_get_other_user()
+    {
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+        $user2 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user1->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->get('/api/v1/user/pegar-um/' . $user2->id);
+
+        $response->assertStatus(403);
+
     }
 
     public function test_auth_admin_can_put_user()
@@ -280,6 +492,317 @@ class UserTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    public function test_auth_user_put_firstName_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'O campo first name é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_lastName_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'O campo last name é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_email_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'O campo email é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_email_unique()
+    {
+        $user = User::factory()->create([
+            'email' => 'emaildetest@test.com',
+            'email_verified_at' => Date::now()
+        ]);
+        $user2 = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $token = $this->post('/api/login', [
+            'email' => $user2->email,
+            'password' => 'foo',
+        ])->json('token');
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json']
+            )->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
+            'firstName' => fake()->firstName,
+            'lastName' => fake()->lastName,
+            'email' => 'emaildetest@test.com',
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user',
+        ]);
+
+        $response->assertJson(['message' => 'E-mail já cadastrado no sistema.']);
+        $response->assertStatus(422);
+
+
+    }
+
+    public function test_auth_user_put_email_safe_email()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo',
+        ])->json('token');
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json']
+            )->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'firstName' => fake()->firstName,
+            'lastName' => fake()->lastName,
+            'email' => 'emaildetesttest.com',
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user',
+        ]);
+
+        $response->assertJson(['message' => 'O campo e-mail deve ser um endereço válido.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_cpf_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'lastName' => fake()->lastName(),
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'O campo cpf é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_cpf_unique()
+    {
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'cpf' => '12345678911'
+        ]);
+        $user2 = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user2->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
+            'lastName' => fake()->lastName(),
+            'firstName' => fake()->firstName(),
+            'cpf' => '12345678911',
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'CPF já cadastrado no sistema.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_cpf_11_digits()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'lastName' => fake()->lastName(),
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('##99#######'),
+            'cpf' => '123456789',
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'CPF digitado incorretamente.']);
+        $response->assertStatus(422);
+
+
+    }
+
+    public function test_auth_user_put_phone_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'lastName' => fake()->lastName(),
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'type' => 'user'
+        ]);
+
+        $response->assertJson(['message' => 'O campo phone é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_put_type_required()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
+            'lastName' => fake()->lastName(),
+            'firstName' => fake()->firstName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+        ]);
+
+        $response->assertJson(['message' => 'O campo type é o obrigatório.']);
+        $response->assertStatus(422);
+
+    }
+
+
+
+
+
+    public function test_unauthorized_user_should_not_put_another_user()
+    {
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+        $user2 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user1->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
+            'firstName' => fake()->firstName(),
+            'lastName' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'cpf' => fake()->unique()->numerify('###########'),
+            'phone' => fake()->numerify('##99#######'),
+            'type' => 'user'
+        ]);
+
+        $response->assertStatus(403);
+
     }
 
     public function test_auth_admin_can_patch_user_password()

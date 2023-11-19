@@ -36,9 +36,10 @@ class UserRequest extends FormRequest
     {
         return [
             'required'=> 'O campo :attribute é o obrigatório.',
-            'email.unique'=> 'Email já cadastrado no sistema.',
-            'cpf.unique'=> 'CPF já cadastrado no sistema',
-            'cpf.digits'=> 'CPF digitado incorretamente'
+            'email' => 'O campo e-mail deve ser um endereço válido.',
+            'email.unique'=> 'E-mail já cadastrado no sistema.',
+            'cpf.unique'=> 'CPF já cadastrado no sistema.',
+            'cpf.digits'=> 'CPF digitado incorretamente.'
         ];
     }
 }

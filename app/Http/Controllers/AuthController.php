@@ -21,7 +21,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             if (!$user || !$user->status) {
-                return response()->json(['error' => 'Usuário inativo']);
+                return response()->json(['error' => 'Usuário inativo ou inexistente'], 403);
             }
 
             $credentials = $request->only(['email', 'password']);

@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 
@@ -12,22 +15,29 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
-    public function test_user_can_create_a_account(): void
+    public function test_user_can_create_a_account()
     {
-
-        $response = $this->json('POST', '/api/user/cadastro', [
+        $data = [
             'firstName' => fake()->firstName(),
             'lastName' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'cpf' => fake()->unique()->numerify('###########'),
             'phone' => fake()->numerify('##99#######'),
             'password' => fake()->password(),
+        ];
+
+        $response = $this->json('POST', '/api/user/cadastro', $data);
+
+        $this->assertDatabaseHas('users', [
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
+            'email' => $data['email'],
+            'cpf' => $data['cpf'],
+            'phone' => $data['phone'],
         ]);
 
         $response->assertStatus(201);
+
     }
 
     public function test_user_can_login(): void
@@ -39,9 +49,75 @@ class UserTest extends TestCase
             'password' => 'foo'
         ]);
 
-
         $response->assertStatus(200);
     }
+
+    public function test_user_status_false_should_not_login()
+    {
+        $user = User::factory()->create(['status' => false]);
+
+        $response = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_nonexistent_user_should_not_login()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('/api/login', [
+            'email' => 'invalidemail@gmail.com',
+            'password' => 'invalidpass'
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_user_with_wrong_email_should_not_login()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->post('/api/login', [
+            'email' => 'invalidemail@gmail.com',
+            'password' => 'foo'
+        ]);
+
+        $response->assertStatus(403);
+
+    }
+
+    public function test_deleted_user_should_not_login()
+    {
+        $admin = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin']
+        );
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $admin->email,
+            'password' => 'foo'
+        ]);
+
+        $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('delete', '/api/v1/user/deletar/' . $user->id);
+
+        $response = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response->assertStatus(403);
+
+    }
+
+
 
     public function test_auth_user_can_do_function_me()
     {
@@ -110,7 +186,7 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_auth_admin_can_get_one_user()
+    public function test_auth_admin_can_get_user()
     {
 
         $admin = User::factory()->create([
@@ -270,6 +346,7 @@ class UserTest extends TestCase
             'Accept' => 'application/json'
         ])->json('delete', '/api/v1/user/deletar/' . $user->id);
 
+        $this->assertSoftDeleted($user);
         $response->assertStatus(200);
 
     }
@@ -289,6 +366,7 @@ class UserTest extends TestCase
             'Accept' => 'application/json'
         ])->json('delete', '/api/v1/user/deletar/' . $user->id);
 
+        $this->assertSoftDeleted($user);
         $response->assertStatus(200);
 
     }
@@ -344,6 +422,77 @@ class UserTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+
+    }
+
+    public function test_forgot_password_send_email_to_user()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $response = $this->json('POST', '/api/forgot-password/email-recuperacao', [
+            'email' => $user->email
+        ]);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_forgot_password_user_get_new_password()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $token = Password::createToken($user);
+
+        $response = $this->json('PUT', '/api/forgot-password/nova-senha', [
+            'email' => $user->email,
+            'password' => 'foo',
+            'password_confirmation' => 'foo',
+            'token' => $token,
+        ]);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_auth_user_can_send_email_verification()
+    {
+        $user = User::factory()->create();
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        Notification::fake();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/email-verificacao');
+
+        $response->assertStatus(200);
+        Notification::assertSentTo($user, VerifyEmail::class);
+
+    }
+
+    public function test_auth_user_verified_should_not_send_email_verification()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $login = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ]);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $login->json('token'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/email-verificacao');
+
+        $response->assertStatus(200)
+                 ->assertJson(['message' => 'E-mail já verificado']);
 
     }
 

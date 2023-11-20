@@ -17,40 +17,26 @@ class UserTest extends TestCase
 
     public function test_user_can_create_a_account()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make();
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $this->assertDatabaseHas('users', [
-            'firstName' => $data['firstName'],
-            'lastName' => $data['lastName'],
-            'email' => $data['email'],
-            'cpf' => $data['cpf'],
-            'phone' => $data['phone'],
+            'firstName' => $user['firstName'],
+            'lastName' => $user['lastName'],
+            'email' => $user['email'],
+            'cpf' => $user['cpf'],
+            'phone' => $user['phone'],
         ]);
 
         $response->assertStatus(201);
-
     }
 
     public function test_user_store_firstName_required()
     {
-        $data = [
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['firstName' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo first name é o obrigatório.']);
         $response->assertStatus(422);
@@ -58,15 +44,9 @@ class UserTest extends TestCase
 
     public function test_user_store_lastName_required()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['lastName' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo last name é o obrigatório.']);
         $response->assertStatus(422);
@@ -74,58 +54,31 @@ class UserTest extends TestCase
 
     public function test_user_store_email_required()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['email' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
+
         $response->assertJson(['message' => 'O campo email é o obrigatório.']);
         $response->assertStatus(422);
     }
 
     public function test_user_store_email_unique()
     {
-        $dataUser1 = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => 'emaildetest@test.com',
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user1 = User::factory()->make(['email' => 'email@test.com']);
+        $user2 = User::factory()->make(['email' => 'email@test.com']);
 
-        $dataUser2 = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => 'emaildetest@test.com',
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $this->json('POST', '/api/user/cadastro', $user1->toArray());
+        $response = $this->json('POST', '/api/user/cadastro', $user2->toArray());
 
-        $responseUser1 = $this->json('POST', '/api/user/cadastro', $dataUser1);
-        $responseUser2 = $this->json('POST', '/api/user/cadastro', $dataUser2);
-
-        $responseUser2->assertJson(['message' => 'E-mail já cadastrado no sistema.']);
-        $responseUser2->assertStatus(422);
+        $response->assertJson(['message' => 'E-mail já cadastrado no sistema.']);
+        $response->assertStatus(422);
     }
 
     public function test_user_store_email_safe_email()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => 'email.sem.arroba.teste.com',
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['email' => 'email.test.com']);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo e-mail deve ser um endereço válido.']);
         $response->assertStatus(422);
@@ -133,15 +86,9 @@ class UserTest extends TestCase
 
     public function test_user_store_cpf_required()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['cpf' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo cpf é o obrigatório.']);
         $response->assertStatus(422);
@@ -149,43 +96,21 @@ class UserTest extends TestCase
 
     public function test_user_store_cpf_unique()
     {
-        $dataUser1 = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => '00011122233',
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user1 = User::factory()->make(['cpf' => '00011122233']);
+        $user2 = User::factory()->make(['cpf' => '00011122233']);
 
-        $dataUser2 = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => '00011122233',
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $this->json('POST', '/api/user/cadastro', $user1->toArray());
+        $response = $this->json('POST', '/api/user/cadastro', $user2->toArray());
 
-        $responseUser1 = $this->json('POST', '/api/user/cadastro', $dataUser1);
-        $responseUser2 = $this->json('POST', '/api/user/cadastro', $dataUser2);
-
-        $responseUser2->assertJson(['message' => 'CPF já cadastrado no sistema.']);
-        $responseUser2->assertStatus(422);
+        $response->assertJson(['message' => 'CPF já cadastrado no sistema.']);
+        $response->assertStatus(422);
     }
 
     public function test_user_store_cpf_have_to_be_11_digits()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => '123456789',
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['cpf' => '123456789']);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'CPF digitado incorretamente.']);
         $response->assertStatus(422);
@@ -193,15 +118,9 @@ class UserTest extends TestCase
 
     public function test_user_store_phone_required()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'password' => fake()->password(),
-        ];
+        $user = User::factory()->make(['phone' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo phone é o obrigatório.']);
         $response->assertStatus(422);
@@ -209,15 +128,9 @@ class UserTest extends TestCase
 
     public function test_user_store_password_required()
     {
-        $data = [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######')
-        ];
+        $user = User::factory()->make(['password' => null]);
 
-        $response = $this->json('POST', '/api/user/cadastro', $data);
+        $response = $this->json('POST', '/api/user/cadastro', $user->toArray());
 
         $response->assertJson(['message' => 'O campo password é o obrigatório.']);
         $response->assertStatus(422);
@@ -276,17 +189,17 @@ class UserTest extends TestCase
     {
         $admin = User::factory()->create([
             'email_verified_at' => Date::now(),
-            'type' => 'admin']
-        );
+            'type' => 'admin'
+        ]);
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('delete', '/api/v1/user/deletar/' . $user->id);
@@ -306,13 +219,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
         ])->post('api/v1/me');
 
         $response->assertStatus(200);
@@ -322,13 +235,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
         ])->post('api/v1/logout');
 
         $response->assertStatus(200);
@@ -339,13 +252,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
         ])->post('api/v1/refresh');
 
         $response->assertStatus(201);
@@ -355,13 +268,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->get('/api/v1/user/pegar-todos');
@@ -381,13 +294,13 @@ class UserTest extends TestCase
         );
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->get('/api/v1/user/pegar-um/' . $user->id);
@@ -400,13 +313,13 @@ class UserTest extends TestCase
 
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->get('/api/v1/user/pegar-um/' . $user->id);
@@ -425,13 +338,13 @@ class UserTest extends TestCase
             'type' => 'user'
         ]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user1->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->get('/api/v1/user/pegar-um/' . $user2->id);
@@ -444,27 +357,22 @@ class UserTest extends TestCase
     {
         $admin = User::factory()->create([
             'email_verified_at' => Date::now(),
-            'type' => 'admin']
-        );
+            'type' => 'admin'
+        ]);
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
+
+        $data = User::factory()->make();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertStatus(200);
     }
@@ -473,23 +381,18 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
+
+        $data = User::factory()->make();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertStatus(200);
     }
@@ -498,22 +401,17 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['firstName' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'O campo first name é o obrigatório.']);
         $response->assertStatus(422);
@@ -524,22 +422,18 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['lastName' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
+
 
         $response->assertJson(['message' => 'O campo last name é o obrigatório.']);
         $response->assertStatus(422);
@@ -550,22 +444,18 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['email' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
+
 
         $response->assertJson(['message' => 'O campo email é o obrigatório.']);
         $response->assertStatus(422);
@@ -585,18 +475,12 @@ class UserTest extends TestCase
             'password' => 'foo',
         ])->json('token');
 
+        $data = User::factory()->make(['email' => 'emaildetest@test.com']);
         $response = $this->withHeaders([
             'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
-            'Accept' => 'application/json']
-            )->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
-            'firstName' => fake()->firstName,
-            'lastName' => fake()->lastName,
-            'email' => 'emaildetest@test.com',
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user',
-        ]);
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, $data->toArray());
 
         $response->assertJson(['message' => 'E-mail já cadastrado no sistema.']);
         $response->assertStatus(422);
@@ -613,18 +497,12 @@ class UserTest extends TestCase
             'password' => 'foo',
         ])->json('token');
 
+        $data = User::factory()->make(['email' => 'email.test.com']);
         $response = $this->withHeaders([
             'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
-            'Accept' => 'application/json']
-            )->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'firstName' => fake()->firstName,
-            'lastName' => fake()->lastName,
-            'email' => 'emaildetesttest.com',
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user',
-        ]);
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'O campo e-mail deve ser um endereço válido.']);
         $response->assertStatus(422);
@@ -635,22 +513,17 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['cpf' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'lastName' => fake()->lastName(),
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'O campo cpf é o obrigatório.']);
         $response->assertStatus(422);
@@ -665,23 +538,17 @@ class UserTest extends TestCase
         ]);
         $user2 = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user2->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['cpf' => '12345678911']);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
-            'lastName' => fake()->lastName(),
-            'firstName' => fake()->firstName(),
-            'cpf' => '12345678911',
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, $data->toArray());
 
         $response->assertJson(['message' => 'CPF já cadastrado no sistema.']);
         $response->assertStatus(422);
@@ -692,23 +559,17 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['cpf' => '123456789']);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'lastName' => fake()->lastName(),
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('##99#######'),
-            'cpf' => '123456789',
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'CPF digitado incorretamente.']);
         $response->assertStatus(422);
@@ -720,22 +581,17 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['phone' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'lastName' => fake()->lastName(),
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'O campo phone é o obrigatório.']);
         $response->assertStatus(422);
@@ -746,31 +602,22 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make(['type' => null]);
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, [
-            'lastName' => fake()->lastName(),
-            'firstName' => fake()->firstName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user->id, $data->toArray());
 
         $response->assertJson(['message' => 'O campo type é o obrigatório.']);
         $response->assertStatus(422);
 
     }
-
-
-
-
 
     public function test_unauthorized_user_should_not_put_another_user()
     {
@@ -783,23 +630,17 @@ class UserTest extends TestCase
             'type' => 'user'
         ]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user1->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make();
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'type' => 'user'
-        ]);
+        ])->json('PUT', '/api/v1/user/atualizar/' . $user2->id, $data->toArray());
 
         $response->assertStatus(403);
 
@@ -813,13 +654,13 @@ class UserTest extends TestCase
         );
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('PATCH', '/api/v1/user/atualizar-senha/' . $user->id, [
@@ -834,13 +675,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('PATCH', '/api/v1/user/atualizar-senha/' . $user->id, [
@@ -858,13 +699,13 @@ class UserTest extends TestCase
         );
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('delete', '/api/v1/user/deletar/' . $user->id);
@@ -878,13 +719,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('delete', '/api/v1/user/deletar/' . $user->id);
@@ -901,23 +742,17 @@ class UserTest extends TestCase
             'type' => 'admin']
         );
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
+        $data = User::factory()->make();
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('post', '/api/v1/user/cadastro/admin', [
-            'firstName' => fake()->firstName(),
-            'lastName' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
-            'cpf' => fake()->unique()->numerify('###########'),
-            'phone' => fake()->numerify('##99#######'),
-            'password' => fake()->password(),
-        ]);
+        ])->json('post', '/api/v1/user/cadastro/admin', $data->toArray());
 
         $response->assertStatus(201);
 
@@ -931,13 +766,13 @@ class UserTest extends TestCase
         );
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $admin->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('PATCH', '/api/v1/user/mudar-status/' . $user->id, [
@@ -981,15 +816,15 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         Notification::fake();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('POST', '/api/v1/email-verificacao');
@@ -1003,13 +838,13 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
-        $login = $this->post('/api/login', [
+        $token = $this->post('/api/login', [
             'email' => $user->email,
             'password' => 'foo'
-        ]);
+        ])->json('token');
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer' . $login->json('token'),
+            'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
         ])->json('POST', '/api/v1/email-verificacao');

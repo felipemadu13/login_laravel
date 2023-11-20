@@ -136,6 +136,7 @@ class UserTest extends TestCase
         $response->assertStatus(422);
     }
 
+    // AuthTest
     public function test_user_can_login(): void
     {
         $user = User::factory()->create();

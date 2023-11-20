@@ -21,8 +21,14 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
-            $users = $this->userRepository->findAll();
+
+            if (Gate::allows('isAdmin')) {
+                $users = $this->userRepository->findAll();
+            } else {
+                $users = $this->userRepository->findById(auth()->user()->id);
+            }
             return  response()->json($users, 200);
+            // return response()->json(['error' => 'Usuário não autorizado.'], 403);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }

@@ -22,13 +22,13 @@ class UserController extends Controller
     {
         try {
 
-            if (Gate::allows('isAdmin')) {
-                $users = $this->userRepository->findAll();
-            } else {
-                $users = $this->userRepository->findById(auth()->user()->id);
+            if (!Gate::allows('isAdmin')) {
+                $user = $this->userRepository->findById(auth()->user()->id);
+                return response()->json($user, 200);
             }
+
+            $users = $this->userRepository->findAll();
             return  response()->json($users, 200);
-            // return response()->json(['error' => 'Usuário não autorizado.'], 403);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], $e->getCode());
         }
@@ -94,6 +94,12 @@ class UserController extends Controller
         }
     }
 
+        /**
+     * Armazena um novo usuário com função de administrador.
+     *
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function storeAdmin(UserRequest $request)
     {
         try {
@@ -111,6 +117,13 @@ class UserController extends Controller
         }
     }
 
+        /**
+     * Altera o status de um usuário (true ou false).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function changeUserStatus(Request $request, int $id)
     {
         try {

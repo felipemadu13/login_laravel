@@ -117,6 +117,15 @@ class AuthController extends Controller
         }
     }
 
+
+
+    /**
+     *
+     * Envia um e-mail de verificação para o usuário.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function verificationEmailSend(Request $request)
     {
 
@@ -132,7 +141,13 @@ class AuthController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+     /**
+     *
+     * Marca o e-mail do usuário como verificado
+     *
+     * @param \Illuminate\Foundation\Auth\EmailVerificationRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function verificationEmailVerify(EmailVerificationRequest $request)
     {
 

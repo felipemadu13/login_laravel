@@ -3,11 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 
@@ -188,8 +185,7 @@ class UserTest extends TestCase
     }
 
 
-
-    public function test_auth_user_can_get_all_users()
+    public function test_auth_user_can_get_just_himself_in_find_all()
     {
         $user = User::factory()->create(['email_verified_at' => Date::now()]);
 
@@ -807,6 +803,7 @@ class UserTest extends TestCase
 
         $this->assertSoftDeleted($user);
         $response->assertStatus(200);
+        $response->assertJson(['success' => 'Usuário deletado com sucesso.']);
 
     }
 
@@ -831,6 +828,39 @@ class UserTest extends TestCase
 
         $this->assertSoftDeleted($user);
         $response->assertStatus(200);
+        $response->assertJson(['success' => 'Usuário deletado com sucesso.']);
+
+    }
+
+    public function test_unauthorized_user_should_not_delete_another_user()
+    {
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+        $user2 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+
+        $this->assertNotNull($user1);
+        $this->assertNotNull($user2);
+
+        $token = $this->post('/api/login', [
+            'email' => $user1->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user1);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('delete', '/api/v1/user/deletar/' . $user2->id);
+
+        $response->assertStatus(403);
+        $response->assertJson(['error' => 'Usuário não autorizado.']);
 
     }
 
@@ -865,6 +895,38 @@ class UserTest extends TestCase
 
     }
 
+    public function test_unauthorized_user_should_not_create_another_admin()
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+
+        $this->assertNotNull($user);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user);
+
+        $data = User::factory()->make();
+
+        $this->assertNotNull($data);
+        $this->assertIsArray($data->toArray());
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/user/cadastro/admin', $data->toArray());
+
+        $response->assertStatus(403);
+        $response->assertJson(['error' => 'Usuário não autorizado.']);
+
+    }
+
     public function test_auth_admin_can_change_user_status()
     {
         $admin = User::factory()->create([
@@ -895,88 +957,74 @@ class UserTest extends TestCase
 
     }
 
-    public function test_forgot_password_send_email_to_user()
+    public function test_unauthorized_user_should_not_put_another_user_status()
     {
-        $user = User::factory()->create(['email_verified_at' => Date::now()]);
-
-        $this->assertNotNull($user);
-
-        $response = $this->json('POST', '/api/forgot-password/email-recuperacao', [
-            'email' => $user->email
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
+        $user2 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
         ]);
 
-        $response->assertStatus(200);
-
-    }
-
-    public function test_forgot_password_user_get_new_password()
-    {
-        $user = User::factory()->create(['email_verified_at' => Date::now()]);
-
-        $this->assertNotNull($user);
-
-        $token = Password::createToken($user);
-
-        $response = $this->json('PUT', '/api/forgot-password/nova-senha', [
-            'email' => $user->email,
-            'password' => 'foo',
-            'password_confirmation' => 'foo',
-            'token' => $token,
-        ]);
-
-        $response->assertStatus(200);
-
-    }
-
-    public function test_auth_user_can_send_email_verification()
-    {
-        $user = User::factory()->create();
-
-        $this->assertNotNull($user);
+        $this->assertNotNull($user1);
+        $this->assertNotNull($user2);
 
         $token = $this->post('/api/login', [
-            'email' => $user->email,
+            'email' => $user1->email,
             'password' => 'foo'
         ])->json('token');
 
-        $this->assertAuthenticatedAs($user);
-
-        Notification::fake();
+        $this->assertAuthenticatedAs($user1);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('POST', '/api/v1/email-verificacao');
+        ])->json('PATCH', '/api/v1/user/mudar-status/' . $user2->id, [
+            "status" => false
+        ]);
 
-        $response->assertStatus(200);
-        Notification::assertSentTo($user, VerifyEmail::class);
+        $response->assertStatus(403);
+        $response->assertJson(['error' => 'Usuário não autorizado.']);
+
 
     }
 
-    public function test_auth_user_verified_should_not_send_email_verification()
+    public function test_to_change_status_status_required()
     {
-        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+        $user1 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'admin'
+        ]);
+        $user2 = User::factory()->create([
+            'email_verified_at' => Date::now(),
+            'type' => 'user'
+        ]);
 
-        $this->assertNotNull($user);
+        $this->assertNotNull($user1);
+        $this->assertNotNull($user2);
 
         $token = $this->post('/api/login', [
-            'email' => $user->email,
+            'email' => $user1->email,
             'password' => 'foo'
         ])->json('token');
 
-        $this->assertAuthenticatedAs($user);
+        $this->assertAuthenticatedAs($user1);
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer' . $token,
             'Content-Type' => 'application/json',
             'Accept' => 'application/json'
-        ])->json('POST', '/api/v1/email-verificacao');
+        ])->json('PATCH', '/api/v1/user/mudar-status/' . $user2->id);
 
-        $response->assertStatus(200)
-                 ->assertJson(['message' => 'E-mail já verificado']);
+        $response->assertJson(['error' => 'Status é Obrigatório!']);
+        $response->assertStatus(422);
 
     }
+
+
 
 
 

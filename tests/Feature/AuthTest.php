@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -185,6 +187,89 @@ class AuthTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure(['Novo Token']);
+    }
+
+    public function test_forgot_password_send_email_to_user()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $this->assertNotNull($user);
+
+        $response = $this->json('POST', '/api/forgot-password/email-recuperacao', [
+            'email' => $user->email
+        ]);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_forgot_password_user_get_new_password()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $this->assertNotNull($user);
+
+        $token = Password::createToken($user);
+
+        $response = $this->json('PUT', '/api/forgot-password/nova-senha', [
+            'email' => $user->email,
+            'password' => 'foo',
+            'password_confirmation' => 'foo',
+            'token' => $token,
+        ]);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_auth_user_can_send_email_verification()
+    {
+        $user = User::factory()->create();
+
+        $this->assertNotNull($user);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user);
+
+        Notification::fake();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/email-verificacao');
+
+        $response->assertStatus(200);
+        Notification::assertSentTo($user, VerifyEmail::class);
+
+    }
+
+    public function test_auth_user_verified_should_not_send_email_verification()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $this->assertNotNull($user);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/email-verificacao');
+
+        $response->assertStatus(200)
+                 ->assertJson(['message' => 'E-mail já verificado']);
+
     }
 
 }

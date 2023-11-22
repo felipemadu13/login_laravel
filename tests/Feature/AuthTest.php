@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
@@ -12,14 +11,12 @@ use Illuminate\Support\Facades\Password;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Notifications\ResetPasswordNotification;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 
 class AuthTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use RefreshDatabase, WithFaker;
 
     public function test_user_can_login(): void
     {

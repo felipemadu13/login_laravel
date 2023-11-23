@@ -12,6 +12,7 @@ class UserRepository extends Repository
     public function register(object $attributes, string $admin) {
 
        $users = self::Model()->all();
+
        $user = $this->create([
         'firstName' => $attributes->firstName,
         'lastName'  => $attributes->lastName,
@@ -21,6 +22,10 @@ class UserRepository extends Repository
         'type'      => $users->isEmpty() || $admin == 'admin' ? 'admin' : 'user',
         'password'  => bcrypt($attributes->password)
      ]);
+
+        if(!$user) {
+            throw new \Exception('Erro inesperado', 500);
+        }
 
        return $user;
     }

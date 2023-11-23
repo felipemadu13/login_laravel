@@ -1019,7 +1019,7 @@ class UserTest extends TestCase
             'Accept' => 'application/json'
         ])->json('PATCH', '/api/v1/user/mudar-status/' . $user2->id);
 
-        $response->assertJson(['error' => 'Status é Obrigatório!']);
+        $response->assertJson(['error' => 'Status é Obrigatório.']);
         $response->assertStatus(422);
 
     }

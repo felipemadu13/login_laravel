@@ -54,7 +54,7 @@ class AuthController extends Controller
      *         response=500,
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Mensagem de erro detalhada")
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     )
      *  ),
@@ -118,7 +118,7 @@ class AuthController extends Controller
      *         response=500,
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Mensagem de erro detalhada")
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     ),
      * )
@@ -154,7 +154,7 @@ class AuthController extends Controller
      *         response=500,
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Mensagem de erro detalhada")
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     )
      * )
@@ -188,7 +188,7 @@ class AuthController extends Controller
      *         response=500,
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", description="Mensagem de erro detalhada")
+     *             @OA\Property(property="error", type="string", description="Mensagem de erro detalhada", example="Mensagem de erro do sistema")
      *         )
      *     ),
      * )
@@ -233,7 +233,7 @@ class AuthController extends Controller
      *         response="500",
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Erro detalhado")
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     )
      * )
@@ -274,7 +274,7 @@ class AuthController extends Controller
      *      ),
      *      @OA\Response(
      *          response=200,
-     *          description="Senha alterada com sucesso",
+     *          description="Redefinição de senha",
      *          @OA\JsonContent(
      *              @OA\Property(property="message", type="string", example="Senha alterada com sucesso"),
      *          ),
@@ -283,7 +283,7 @@ class AuthController extends Controller
      *          response=500,
      *          description="Erro ao processar a solicitação",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Erro detalhado"),
+     *              @OA\Property(property="message", type="string", example="Mensagem de erro do sistema"),
      *          ),
      *      ),
      * )
@@ -339,7 +339,7 @@ class AuthController extends Controller
      *         response=500,
      *         description="Erro interno do servidor",
      *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="string", example="Mensagem de erro detalhada.")
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     )
      * )
@@ -378,21 +378,14 @@ class AuthController extends Controller
      *          response=200,
      *          description="E-mail verificado com sucesso",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="E-mail verificado")
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=400,
-     *          description="E-mail já verificado",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="E-mail já verificado")
+     *              @OA\Property(property="message", type="string", example="E-mail verificado"),
      *          )
      *      ),
      *      @OA\Response(
      *          response=500,
      *          description="Erro interno do servidor",
      *          @OA\JsonContent(
-     *              @OA\Property(property="error", type="string", example="Mensagem de erro detalhada")
+     *              @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *          )
      *      ),
      * )

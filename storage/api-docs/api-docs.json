@@ -99,7 +99,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro detalhada"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -210,7 +210,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro detalhada"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -259,7 +259,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro detalhada"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -309,7 +309,8 @@
                                     "properties": {
                                         "error": {
                                             "description": "Mensagem de erro detalhada",
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -391,7 +392,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Erro detalhado"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -449,7 +450,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Senha alterada com sucesso",
+                        "description": "Redefinição de senha",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -472,7 +473,7 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "Erro detalhado"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -516,7 +517,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro detalhada."
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -573,22 +574,6 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "E-mail já verificado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "E-mail já verificado"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
                     "500": {
                         "description": "Erro interno do servidor",
                         "content": {
@@ -597,7 +582,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro detalhada"
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -693,6 +678,38 @@
                                         },
                                         "type": "object"
                                     }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhum dado encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Nenhum dado encontrado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -844,6 +861,22 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -962,6 +995,39 @@
                                             "description": "Error message",
                                             "type": "string",
                                             "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Item solicitado não existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Item solicitado não existe"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -1141,6 +1207,22 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro inesperado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1198,6 +1280,38 @@
                                             "description": "Mensagem de erro",
                                             "type": "string",
                                             "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Item solicitado não existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Item solicitado não existe"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro inesperado"
                                         }
                                     },
                                     "type": "object"
@@ -1267,7 +1381,7 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Administrador cadastrado com sucesso",
                         "content": {
                             "application/json": {
@@ -1363,6 +1477,22 @@
                                             "description": "Mensagem de erro",
                                             "type": "string",
                                             "example": "Erro ao cadastrar"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"
@@ -1530,6 +1660,22 @@
                                             "description": "Mensagem de erro indicando que o status é obrigatório",
                                             "type": "string",
                                             "example": "Status é Obrigatório."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro do sistema"
                                         }
                                     },
                                     "type": "object"

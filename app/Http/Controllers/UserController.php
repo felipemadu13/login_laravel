@@ -55,6 +55,20 @@ class UserController extends Controller
      *             )
      *         )
      *     ),
+     *         @OA\Response(
+     *         response=404,
+     *         description="Nenhum dado encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Nenhum dado encontrado.")
+     *         )
+     *     ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
+     *         )
+     *     ),
      * )
      */
     public function index(Request $request)
@@ -69,7 +83,7 @@ class UserController extends Controller
             $users = $this->userRepository->findAll();
             return  response()->json($users, 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
 
@@ -120,6 +134,13 @@ class UserController extends Controller
      *             @OA\Property(property="error", type="string", description="Mensagem de erro", example="Erro ao cadastrar")
      *         )
      *     ),
+     *      @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Erro inesperado")
+     *         )
+     *     ),
      * )
      */
     public function store(UserRequest $request)
@@ -127,13 +148,10 @@ class UserController extends Controller
         try {
 
             $user =  $this->userRepository->register($request, 'user');
-            if(!$user) {
-                return response()->json(['error' => 'Erro ao cadastrar'], 404);
-            }
             return response()->json(['success' => $user], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
 
@@ -191,6 +209,20 @@ class UserController extends Controller
      *              )
      *          )
      *      ),
+     *         @OA\Response(
+     *         response=404,
+     *         description="Item solicitado não existe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", description="Mensagem de erro", example="Item solicitado não existe")
+     *         )
+     *     ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
+     *         )
+     *     ),
      * )
      */
     public function show(int $id)
@@ -203,7 +235,7 @@ class UserController extends Controller
             $users =  $this->userRepository->findById($id);
             return response()->json(['success' => $users], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
         /**
@@ -272,6 +304,13 @@ class UserController extends Controller
      *              )
      *          )
      *      ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Erro inesperado")
+     *         )
+     *     ),
      * )
      *
      * @param UserRequest $request
@@ -291,7 +330,7 @@ class UserController extends Controller
 
             return response()->json(['success' => $user], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
             /**
@@ -336,6 +375,20 @@ class UserController extends Controller
      *              )
      *          )
      *      ),
+     *         @OA\Response(
+     *         response=404,
+     *         description="Item solicitado não existe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Item solicitado não existe")
+     *         )
+     *     ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Erro inesperado")
+     *         )
+     *     ),
      * )
      *
      * @param UserRequest $request
@@ -354,7 +407,7 @@ class UserController extends Controller
 
             return response()->json(['success' => 'Usuário deletado com sucesso.'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
         /**
@@ -377,8 +430,8 @@ class UserController extends Controller
      *             @OA\Property(property="password", type="string", format="password", description="Senha do usuário", example="floresta459")
      *         )
      *      ),
-     *      *     @OA\Response(
-     *         response=200,
+     *         @OA\Response(
+     *         response=201,
      *         description="Administrador cadastrado com sucesso",
      *         @OA\JsonContent(
      *             @OA\Property(
@@ -414,6 +467,13 @@ class UserController extends Controller
      *              @OA\Property(property="error", type="string", description="Mensagem de erro", example="Erro ao cadastrar")
      *          )
      *      ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
+     *         )
+     *     ),
      * )
      */
 
@@ -430,7 +490,7 @@ class UserController extends Controller
             return response()->json(['success' => $user], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
 
@@ -498,6 +558,13 @@ class UserController extends Controller
      *             @OA\Property(property="error", type="string", description="Mensagem de erro indicando que o status é obrigatório", example="Status é Obrigatório.")
      *         )
      *     ),
+     *         @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
+     *         )
+     *     ),
      * )
      */
     public function changeUserStatus(Request $request, int $id)
@@ -519,7 +586,7 @@ class UserController extends Controller
         } catch (ValidationException $e) {
             return response()->json(['error' => 'Status é Obrigatório.'], 422);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], $e->getCode());
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
 

@@ -31,4 +31,3 @@ Route::prefix('v1')->middleware(['jwt.auth'])->group(function () {
     Route::post('/email-verificacao', [AuthController::class, "verificationEmailSend"]);
     Route::get('/email/verify/{id}/{hash}', [AuthController::class, "verificationEmailVerify"])->name('verification.verify');
 });
-

@@ -1,0 +1,1560 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Login API",
+        "version": "0.0.1"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Autenticação do usuário",
+                "description": "Autentica um usuário e obter um token de acesso.",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "rhood@test.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "floresta459"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Autenticação bem-sucedida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "description": "Token de acesso",
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciais inválidas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Senha ou email inválido",
+                                            "type": "string",
+                                            "example": "Senha ou email inválido"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Usuário inativo ou inexistente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Usuário inativo ou inexistente",
+                                            "type": "string",
+                                            "example": "Usuário inativo ou inexistente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro detalhada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/me": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Mostra detalhes do usuário autenticado",
+                "description": "Retorna detalhes do usuário autenticado.",
+                "operationId": "me",
+                "responses": {
+                    "200": {
+                        "description": "Operação bem-sucedida. Retorna os dados atualizados do usuário.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Exibe as informações do usuário autenticado",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "deleted_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro detalhada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Encerra a sessão do usuário",
+                "description": "Encerra a sessão do usuário autenticado",
+                "operationId": "c4eddaf1a2e990cc90e4326c0d731d41",
+                "responses": {
+                    "200": {
+                        "description": "Sessão encerrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Sessão encerrada com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro detalhada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/refresh": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Atualiza o token de autenticação",
+                "description": "Obtém um novo token de acesso com base no token atual.",
+                "operationId": "refresh",
+                "responses": {
+                    "201": {
+                        "description": "Token atualizado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "Novo Token": {
+                                            "description": "Novo token de acesso",
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro detalhada",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/forgot-password/email-recuperacao": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Enviar link de redefinição de senha por e-mail",
+                "operationId": "8f49108d32ffd616f0033e670e603bc2",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@test.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Link de redefinição de senha enviado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Enviamos o link de redefinição de senha para o seu e-mail."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro ao enviar o link de redefinição de senha",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Não encontramos um usuário com esse endereço de e-mail."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erro detalhado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/forgot-password/nova-senha": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Atualiza a senha do usuário após redefinição",
+                "description": "Atualiza a senha do usuário após uma solicitação de redefinição de senha bem-sucedida.",
+                "operationId": "passwordResetUpdate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "token"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "usuario@test.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nova_senha"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "nova_senha"
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "token_de_redefinicao"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Senha alterada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Senha alterada com sucesso"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro ao processar a solicitação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Erro detalhado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/email-verificacao": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Envia um e-mail de verificação para o usuário",
+                "description": "Verifica se o e-mail do usuário já foi verificado. Se não, envia um e-mail de verificação.",
+                "operationId": "verificationEmailSend",
+                "responses": {
+                    "200": {
+                        "description": "E-mail de verificação enviado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "E-mail de verificação enviado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro detalhada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/email/verify/{id}/{hash}": {
+            "post": {
+                "tags": [
+                    "AuthController"
+                ],
+                "summary": "Verifica o e-mail do usuário",
+                "description": "Verifica se o e-mail do usuário foi verificado. Em caso afirmativo, retorna uma mensagem indicando que o e-mail já foi verificado. Caso contrário, marca o e-mail como verificado e retorna uma mensagem de sucesso.",
+                "operationId": "verifyEmail",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "token_do_email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "E-mail verificado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "E-mail verificado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "E-mail já verificado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "E-mail já verificado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno do servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensagem de erro detalhada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "api/v1/user/pegar-todos": {
+            "get": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Listar todos os usuários do sistema",
+                "description": "Caso o usuário seja admin, retorna todos os usuários. Caso o usuário seja do tipo user, retorna o próprio usuário.",
+                "operationId": "index",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuários",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 2
+                                            },
+                                            "firstName": {
+                                                "type": "string",
+                                                "example": "Robin"
+                                            },
+                                            "lastName": {
+                                                "type": "string",
+                                                "example": "Hood"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "rhood@teste.com"
+                                            },
+                                            "cpf": {
+                                                "type": "string",
+                                                "example": "00000000002"
+                                            },
+                                            "phone": {
+                                                "type": "string",
+                                                "example": "81996501010"
+                                            },
+                                            "status": {
+                                                "type": "boolean",
+                                                "example": true
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "user",
+                                                    "admin"
+                                                ],
+                                                "example": "user"
+                                            },
+                                            "email_verified_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": null
+                                            },
+                                            "password": {
+                                                "type": "string",
+                                                "example": "$2y$10$iOKcdpzCHckZM6Xs6yRGq.PQpD.TdxHy1VHly71cPE0Z1uaabtKiG"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2023-11-21T12:24:19.000000Z"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2023-11-21T12:24:19.000000Z"
+                                            },
+                                            "deleted_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": null
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/cadastro": {
+            "post": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Cria um novo usuário",
+                "description": "Endpoint para cadastrar um novo usuário",
+                "operationId": "store",
+                "requestBody": {
+                    "description": "Dados do usuário a ser cadastrado",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "firstName": {
+                                        "description": "Primeiro nome do usuário",
+                                        "type": "string",
+                                        "example": "Robin"
+                                    },
+                                    "lastName": {
+                                        "description": "Sobrenome do usuário",
+                                        "type": "string",
+                                        "example": "Hood"
+                                    },
+                                    "email": {
+                                        "description": "E-mail do usuário",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "rhood@test.com"
+                                    },
+                                    "cpf": {
+                                        "description": "CPF do usuário com 11 digitos",
+                                        "type": "string",
+                                        "example": "00000000002"
+                                    },
+                                    "phone": {
+                                        "description": "Número de telefone do usuário",
+                                        "type": "string",
+                                        "example": "81996501010"
+                                    },
+                                    "password": {
+                                        "description": "Senha do usuário",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "floresta459"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuário cadastrado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Detalhes do usuário cadastrado",
+                                            "properties": {
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erro ao cadastrar o usuário",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Erro ao cadastrar"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "api/v1/user/pegar-um/{id}": {
+            "get": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Encontra um usuário pelo seu id",
+                "description": "Retorna detalhes do usuário",
+                "operationId": "show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Busca o usuário de id correspondente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Detalhes do usuário cadastrado",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "deleted_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "O admin tem acesso a qualquer usuário e o user somente tem acesso a ele mesmo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/atualizar/{id}": {
+            "put": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Atualiza um usuário",
+                "description": "Atualiza um usuário com base no ID",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário a ser atualizado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados do usuário a serem atualizados",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "firstName": {
+                                        "description": "Primeiro nome do usuário",
+                                        "type": "string",
+                                        "example": "Robb"
+                                    },
+                                    "lastName": {
+                                        "description": "Sobrenome do usuário",
+                                        "type": "string",
+                                        "example": "Hood"
+                                    },
+                                    "email": {
+                                        "description": "E-mail do usuário",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "rhood@test.com"
+                                    },
+                                    "cpf": {
+                                        "description": "CPF do usuário com 11 digitos",
+                                        "type": "string",
+                                        "example": "00000000002"
+                                    },
+                                    "phone": {
+                                        "description": "Número de telefone do usuário",
+                                        "type": "string",
+                                        "example": "81996501010"
+                                    },
+                                    "type": {
+                                        "description": "tipo do usuário",
+                                        "type": "string",
+                                        "example": "user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operação bem-sucedida. Retorna os dados atualizados do usuário.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Detalhes do usuário atualizado",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "deleted_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "O admin tem acesso a qualquer usuário e o user somente tem acesso a ele mesmo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/deletar/{id}": {
+            "delete": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Apaga um usuário",
+                "description": "Apaga um usuário com base no ID",
+                "operationId": "delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário a ser apagado",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuário apagado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Usuário deletado com sucesso."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "O admin tem acesso a qualquer usuário e o user somente tem acesso a ele mesmo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/cadastro/admin": {
+            "post": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Cadastrar novo administrador",
+                "description": "Cria um novo administrador no sistema",
+                "operationId": "storeAdmin",
+                "requestBody": {
+                    "description": "Dados do usuário a ser cadastrado",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "firstName": {
+                                        "description": "Primeiro nome do usuário",
+                                        "type": "string",
+                                        "example": "Robin"
+                                    },
+                                    "lastName": {
+                                        "description": "Sobrenome do usuário",
+                                        "type": "string",
+                                        "example": "Hood"
+                                    },
+                                    "email": {
+                                        "description": "E-mail do usuário",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "rhood@test.com"
+                                    },
+                                    "cpf": {
+                                        "description": "CPF do usuário com 11 digitos",
+                                        "type": "string",
+                                        "example": "00000000002"
+                                    },
+                                    "phone": {
+                                        "description": "Número de telefone do usuário",
+                                        "type": "string",
+                                        "example": "81996501010"
+                                    },
+                                    "password": {
+                                        "description": "Senha do usuário",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "floresta459"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Administrador cadastrado com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Detalhes do administrador cadastrado",
+                                            "properties": {
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "O admin tem acesso a qualquer usuário e o user somente tem acesso a ele mesmo.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Erro ao cadastrar o administrador",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro",
+                                            "type": "string",
+                                            "example": "Erro ao cadastrar"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/mudar-status/{id}": {
+            "post": {
+                "tags": [
+                    "UserController"
+                ],
+                "summary": "Alterar o status de um usuário",
+                "description": "Altera o status de um usuário. Apenas usuários com papel de administrador têm permissão.",
+                "operationId": "changeUserStatus",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do usuário",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Dados para a alteração do status do usuário",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "description": "Novo status do usuário (true para ativo, false para inativo)",
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operação bem-sucedida. Retorna os dados atualizados do usuário.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Detalhes do usuário atualizado",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "ID do usuário",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "firstName": {
+                                                    "description": "Primeiro nome do usuário",
+                                                    "type": "string",
+                                                    "example": "Robin"
+                                                },
+                                                "lastName": {
+                                                    "description": "Sobrenome do usuário",
+                                                    "type": "string",
+                                                    "example": "Hood"
+                                                },
+                                                "email": {
+                                                    "description": "E-mail do usuário",
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "example": "rhood@test.com"
+                                                },
+                                                "cpf": {
+                                                    "description": "CPF do usuário",
+                                                    "type": "string",
+                                                    "example": "00000000002"
+                                                },
+                                                "phone": {
+                                                    "description": "Número de telefone do usuário",
+                                                    "type": "string",
+                                                    "example": "81996501010"
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "type": {
+                                                    "description": "Tipo de usuário",
+                                                    "type": "string",
+                                                    "example": "user"
+                                                },
+                                                "email_verified_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                },
+                                                "password": {
+                                                    "description": "Senha do usuário",
+                                                    "type": "string",
+                                                    "example": "$2y$10$xYPET73j6cGcd2cQGA03DOd3R2AyVwoY3mddzvERatUle1a9KANrO"
+                                                },
+                                                "created_at": {
+                                                    "description": "Data de criação do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "description": "Data de atualização do usuário",
+                                                    "type": "string",
+                                                    "example": "2023-11-23T10:20:17.000000Z"
+                                                },
+                                                "deleted_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": null
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro indicando acesso não autorizado",
+                                            "type": "string",
+                                            "example": "Usuário não autorizado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "description": "Mensagem de erro indicando que o status é obrigatório",
+                                            "type": "string",
+                                            "example": "Status é Obrigatório."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

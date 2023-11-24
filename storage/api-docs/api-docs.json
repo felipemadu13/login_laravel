@@ -870,7 +870,7 @@
                                     "properties": {
                                         "error": {
                                             "type": "string",
-                                            "example": "Mensagem de erro do sistema"
+                                            "example": "Erro inesperado"
                                         }
                                     },
                                     "type": "object"

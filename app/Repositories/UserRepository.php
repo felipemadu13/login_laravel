@@ -9,7 +9,7 @@ class UserRepository extends Repository
 {
     protected static $model = User::class;
 
-    public function register(object $attributes, string $admin) {
+    public function register(object $attributes) {
 
        $users = self::Model()->all();
 
@@ -19,7 +19,7 @@ class UserRepository extends Repository
         'email'     => $attributes->email,
         'cpf'       => $attributes->cpf,
         'phone'     => $attributes->phone,
-        'type'      => $users->isEmpty() || $admin == 'admin' ? 'admin' : 'user',
+        'type'      => $users->isEmpty() ? 'admin' : 'user',
         'password'  => bcrypt($attributes->password)
      ]);
 
@@ -29,6 +29,25 @@ class UserRepository extends Repository
 
        return $user;
     }
+
+    public function registerAdmin(object $attributes) {
+
+        $user = $this->create([
+         'firstName' => $attributes->firstName,
+         'lastName'  => $attributes->lastName,
+         'email'     => $attributes->email,
+         'cpf'       => $attributes->cpf,
+         'phone'     => $attributes->phone,
+         'type'      => 'admin',
+         'password'  => bcrypt($attributes->password)
+      ]);
+
+         if(!$user) {
+             throw new \Exception('Erro inesperado', 500);
+         }
+
+        return $user;
+     }
 
     public function updatePut(int $id, object $attributes)
     {

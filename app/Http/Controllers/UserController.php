@@ -147,7 +147,7 @@ class UserController extends Controller
     {
         try {
 
-            $user =  $this->userRepository->register($request, 'user');
+            $user =  $this->userRepository->register($request);
             return response()->json(['success' => $user], 201);
 
         } catch (\Exception $e) {
@@ -483,7 +483,7 @@ class UserController extends Controller
             if (!Gate::allows('isAdmin')) {
                 return response()->json(['error' => 'Usuário não autorizado.'], 403);
             }
-            $user =  $this->userRepository->register($request, 'admin');
+            $user =  $this->userRepository->registerAdmin($request);
             if(!$user) {
                 return response()->json(['error' => 'Erro ao cadastrar'], 404);
             }

@@ -48,7 +48,7 @@ abstract class Repository
         throw new \Exception('Erro inesperado', 500);
     }
 
-    public  function delete(int $id)
+    public function delete(int $id)
     {
 
         $model   = $this->findById($id);

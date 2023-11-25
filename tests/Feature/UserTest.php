@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
 use Tests\TestCase;
 
@@ -1021,6 +1022,74 @@ class UserTest extends TestCase
 
         $response->assertJson(['error' => 'Status é Obrigatório.']);
         $response->assertStatus(422);
+
+    }
+
+    public function test_auth_user_can_upload_a_photo()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $this->assertNotNull($user);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user);
+
+        $image = UploadedFile::fake()->image('photo.jpg', 500, 500);
+
+        $this->assertNotNull($image);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/user/foto/' . $user->id, [
+            'image' => $image,
+        ]);
+
+        $response->assertStatus(200);
+
+    }
+
+    public function test_auth_user_can_remove_a_photo()
+    {
+        $user = User::factory()->create(['email_verified_at' => Date::now()]);
+
+        $this->assertNotNull($user);
+
+        $token = $this->post('/api/login', [
+            'email' => $user->email,
+            'password' => 'foo'
+        ])->json('token');
+
+        $this->assertAuthenticatedAs($user);
+
+        $image = UploadedFile::fake()->image('photo.jpg', 500, 500);
+
+        $this->assertNotNull($image);
+
+        $image = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('POST', '/api/v1/user/foto/' . $user->id, [
+            'image' => $image,
+        ]);
+
+        $this->assertNotNull($image);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->json('PUT', '/api/v1/user/foto/remover/' . $user->id);
+
+        $this->assertNull($response->json('photo'));
+
+        $response->assertStatus(200);
 
     }
 

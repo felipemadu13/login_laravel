@@ -235,7 +235,21 @@ class AuthController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
-     *     )
+     *     ),
+     *     @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
      * )
      *
      * @param \App\Http\Requests\AuthRequest $request
@@ -286,6 +300,20 @@ class AuthController extends Controller
      *              @OA\Property(property="message", type="string", example="Mensagem de erro do sistema"),
      *          ),
      *      ),
+     *      @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
      * )
      *
      * @param AuthRequest $request
@@ -388,6 +416,20 @@ class AuthController extends Controller
      *              @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *          )
      *      ),
+     *      @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
      * )
      */
     public function verificationEmailVerify(EmailVerificationRequest $request)

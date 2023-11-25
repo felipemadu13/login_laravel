@@ -99,5 +99,18 @@ class UserRepository extends Repository
             'usuario_alvo_id'        => $user->id
         ]);
     }
+
+    public function updatePhoto(int $id, object $attributes)
+    {
+
+        $user = $this->update($id, [
+            'image' => $attributes->hasFile('image')
+                    ? $attributes->file('image')->store('users')
+                    : null
+        ]);
+
+        return $user;
+    }
+
 }
 

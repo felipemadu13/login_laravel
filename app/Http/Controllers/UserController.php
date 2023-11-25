@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PhotoRequest;
 use App\Http\Requests\UserRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Gate;
@@ -140,6 +142,20 @@ class UserController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="error", type="string", example="Erro inesperado")
      *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
      *     ),
      * )
      */
@@ -311,6 +327,20 @@ class UserController extends Controller
      *             @OA\Property(property="error", type="string", example="Erro inesperado")
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
      * )
      *
      * @param UserRequest $request
@@ -474,6 +504,20 @@ class UserController extends Controller
      *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
      * )
      */
 
@@ -589,5 +633,158 @@ class UserController extends Controller
             return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
         }
     }
+        /**
+     * @OA\Post(
+     *     path="/api/v1/user/foto/{id}",
+     *     summary="Faz o upload de uma foto",
+     *     description="Faz o upload de uma foto para um usuário específico.",
+     *     operationId="uploadPhoto",
+     *     tags={"UserController"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID do usuário",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Dados da requisição",
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="image",
+     *                     type="file",
+     *                     format="binary",
+     *                     description="Arquivo da imagem a ser enviado"
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Imagem enviada com sucesso")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Requisição inválida",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Nenhuma imagem fornecida")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Não autorizado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Usuário não autorizado.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Mensagem de erro do sistema")
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="Content-Type",
+     *         in="header",
+     *         description="Content type header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     *     @OA\Parameter(
+     *         name="Accept",
+     *         in="header",
+     *         description="Accept header",
+     *         required=true,
+     *         @OA\Schema(type="string", default="application/json")
+     *     ),
+     * )
+     */
+
+    public function uploadPhoto(PhotoRequest $request, int $id)
+    {
+        try {
+
+            if (!Gate::allows('verifyAuthorization', $id)) {
+                return response()->json(['error' => 'Usuário não autorizado.'], 403);
+            }
+
+            if (!$request->hasFile('image')) {
+                return response()->json(['error' => 'Nenhuma imagem fornecida'], 400);
+            }
+
+            $this->userRepository->updatePhoto($id, $request);
+
+            return response()->json(['message' => 'Imagem enviada com sucesso'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
+        }
+    }
+    /**
+     * @OA\Put(
+     *     path="/api/v1/user/foto/remover/{id}",
+     *     summary="Remove a foto",
+     *     description="Remove a foto associada ao id",
+     *     operationId="removePhoto",
+     *     tags={"UserController"},
+     *     @OA\Parameter(
+     *         description="ID da foto",
+     *         in="path",
+     *         name="id",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Imagem removida",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Imagem removida")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="Usuário não autorizado.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Usuário não autorizado.")
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Erro interno do servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Internal Server Error")
+     *         ),
+     *     ),
+     * )
+     *
+     * Remove the photo associated with the given ID.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removePhoto(Request $request, int $id)
+    {
+        try {
+            if (!Gate::allows('verifyAuthorization', $id)) {
+                return response()->json(['error' => 'Usuário não autorizado.'], 403);
+            }
+
+            $this->userRepository->updatePhoto($id, $request);
+            return response()->json(['message' => 'Imagem removida'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getcode() ? $e->getCode() : 500);
+        }
+    }
+
 
 }

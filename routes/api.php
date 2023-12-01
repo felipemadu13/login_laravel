@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 
 
-Route::post('user/cadastro', [UserController::class, "store"]);
-Route::post('login', [AuthController::class, "login"]);
+Route::post('/user/cadastro', [UserController::class, "store"]);
+Route::post('/login', [AuthController::class, "login"]);
 
 Route::prefix('forgot-password')->middleware('guest')->group(function () {
     Route::post('/email-recuperacao', [AuthController::class, "passwordResetEmail"]);
@@ -14,9 +14,9 @@ Route::prefix('forgot-password')->middleware('guest')->group(function () {
 });
 
 Route::prefix('v1')->middleware(['jwt.auth'])->group(function () {
-    Route::post('me', [AuthController::class, "me"]);
-    Route::post('logout', [AuthController::class, "logout"]);
-    Route::post('refresh', [AuthController::class, "refresh"]);
+    Route::post('/me', [AuthController::class, "me"]);
+    Route::post('/logout', [AuthController::class, "logout"]);
+    Route::post('/refresh', [AuthController::class, "refresh"]);
 
     Route::prefix('user')->middleware('verified')->group(function () {
         Route::get('/pegar-todos', [UserController::class, "index"]);
@@ -24,8 +24,10 @@ Route::prefix('v1')->middleware(['jwt.auth'])->group(function () {
         Route::put('/atualizar/{id}', [UserController::class, "update"]);
         Route::patch('/atualizar-senha/{id}', [UserController::class, "update"]);
         Route::delete('/deletar/{id}', [UserController::class, "destroy"]);
-        Route::post('cadastro/admin', [UserController::class, "storeAdmin"]);
+        Route::post('/cadastro/admin', [UserController::class, "storeAdmin"]);
         Route::patch('/mudar-status/{id}',[UserController::class, 'changeUserStatus']);
+        Route::post('/foto/{id}',[UserController::class, 'uploadPhoto']);
+        Route::put('/foto/remover/{id}',[UserController::class, 'removePhoto']);
     });
 
     Route::post('/email-verificacao', [AuthController::class, "verificationEmailSend"]);

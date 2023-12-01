@@ -9,21 +9,45 @@ class UserRepository extends Repository
 {
     protected static $model = User::class;
 
-    public function register(object $attributes, string $admin) {
+    public function register(object $attributes) {
 
        $users = self::Model()->all();
+
        $user = $this->create([
         'firstName' => $attributes->firstName,
         'lastName'  => $attributes->lastName,
         'email'     => $attributes->email,
         'cpf'       => $attributes->cpf,
         'phone'     => $attributes->phone,
-        'type'      => $users->isEmpty() || $admin == 'admin' ? 'admin' : 'user',
+        'type'      => $users->isEmpty() ? 'admin' : 'user',
         'password'  => bcrypt($attributes->password)
      ]);
 
+        if(!$user) {
+            throw new \Exception('Erro inesperado', 500);
+        }
+
        return $user;
     }
+
+    public function registerAdmin(object $attributes) {
+
+        $user = $this->create([
+         'firstName' => $attributes->firstName,
+         'lastName'  => $attributes->lastName,
+         'email'     => $attributes->email,
+         'cpf'       => $attributes->cpf,
+         'phone'     => $attributes->phone,
+         'type'      => 'admin',
+         'password'  => bcrypt($attributes->password)
+      ]);
+
+         if(!$user) {
+             throw new \Exception('Erro inesperado', 500);
+         }
+
+        return $user;
+     }
 
     public function updatePut(int $id, object $attributes)
     {
@@ -63,10 +87,17 @@ class UserRepository extends Repository
         $user = $this->findById($id);
         Log::channel('user')->info("{$auth->type}: {$auth->firstName} cpf: {$auth->cpf} ip: {$attributes->ip()} {$message} informações de {$user->type}: {$user->firstName} {$user->lastName} cpf: {$user->cpf}", [
             'autenticado_metodo'     => $attributes->method(),
+<<<<<<< HEAD
             'autenticado_tipo'       => auth()->user()->type,
             'autenticado_nome'       => auth()->user()->firstName,
             'autenticado_id'         => auth()->user()->id,
             'autenticado_cpf'        => auth()->user()->cpf,
+=======
+            'autenticado_tipo'       => $auth->type,
+            'autenticado_nome'       => $auth->firstName,
+            'autenticado_id'         => $auth->id,
+            'autenticado_cpf'        => $auth->cpf,
+>>>>>>> master
             'autenticado_ip'         => $attributes->ip(),
             'usuario_alvo_tipo'      => $user->type,
             'usuario_alvo_nome'      => $user->firstName,
@@ -75,5 +106,18 @@ class UserRepository extends Repository
             'usuario_alvo_id'        => $user->id
         ]);
     }
+
+    public function updatePhoto(int $id, object $attributes)
+    {
+
+        $user = $this->update($id, [
+            'image' => $attributes->hasFile('image')
+                    ? $attributes->file('image')->store('users')
+                    : null
+        ]);
+
+        return $user;
+    }
+
 }
 
